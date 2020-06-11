@@ -1,0 +1,52 @@
+# project specific
+# vlang built files (for any v source in current folder), as a quick workaround
+# exclude all (first) and then negate exclude on all with an extension, and all folders
+*
+!*/
+!*.*
+!/LICENSE
+# then add all other (folder and files) exclusions ...
+
+# temporary/work/output folders
+_old/
+# bin/
+build/
+dist/
+docs/
+out/
+private/
+temp/
+tmp/
+
+# mac files
+.DS_Store
+
+# environment variables file
+.env
+.envrc
+
+# IDE/editors
+.vscode
+.cache
+.metadata
+.settings
+
+# common files to not commit
+*~*
+*.bak
+Thumbs.db
+*.db
+*.zip
+*.tar
+*.tar.gz
+*.out
+*.lock
+
+# executable and binary files files
+*.bin
+*.exe
+*.dll
+*.so
+*.o
+# below exclude even all files without an extension ...
+
