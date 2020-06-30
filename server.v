@@ -44,7 +44,7 @@ pub fn (mut app App) init() {
 
 // serve some content on the root (index) route '/'
 // note that this requires template page 'index.html', or compile will fail ...
-fn (mut app App) index() vweb.Result  {
+fn (mut app App) index() vweb.Result {
 	app.cnt++ // sample, increment count number of page requests
     return $vweb.html()
 }
@@ -64,18 +64,23 @@ fn (mut app App) includes() vweb.Result {
 
 // sample route that exposes a text reply at '/cookie'
 // show headers in the reply (as text), and set a sample cookie
-pub fn (mut app App) cookie() {
+pub fn (mut app App) cookie() vweb.Result {
 	app.vweb.set_cookie('cookie', 'test')
-	app.vweb.text('Headers: $app.vweb.headers')
+	return app.vweb.text('Headers: $app.vweb.headers')
 }
 
 // sample route that exposes a text reply at '/hello'
-pub fn (mut app App) hello() {
-	app.vweb.text('Hello world from vweb at ${time.now().format()}')
+pub fn (mut app App) hello() vweb.Result {
+	return app.vweb.text('Hello world from vweb at ${time.now().format()}')
+}
+
+// sample route that exposes a json reply at '/hj'
+fn (mut app App) hj() vweb.Result {
+	return app.vweb.json('{"Hello":"World"}')
 }
 
 // sample route that exposes a json reply at '/time'
-pub fn (mut app App) time() {
+pub fn (mut app App) time() vweb.Result {
 	now := time.now()
-	app.vweb.json('{"timestamp": "${now.unix_time()}", "time":"$now"}')
+	return app.vweb.json('{"timestamp": "${now.unix_time()}", "time":"$now"}')
 }

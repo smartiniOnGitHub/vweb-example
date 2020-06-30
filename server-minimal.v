@@ -48,7 +48,7 @@ pub fn (mut app App) init() {
 
 // serve some content on the root (index) route '/'
 // note that this implementation doesn't requires a template page ...
-fn (mut app App) index() {
-	app.vweb.json('{"hello": "world"}')
+fn (mut app App) index() vweb.Result {
+	return app.vweb.json('{"hello": "world"}')
 }
 
