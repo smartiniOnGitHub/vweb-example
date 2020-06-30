@@ -51,6 +51,7 @@ when built on a modern Linux distribution (like Ubuntu 20.04 LTS at 64 bit) is:
 - normal build: 365 KB
 - optimized build (for production): 53 KB
 and this is impressive.
+When building the same sources in Windows, executables are bigger (only a little).
 
 
 ## License
