@@ -1,6 +1,7 @@
 module main
 
 import time
+import v.util as vu
 import vweb
 
 // expose a simple, minimal web server
@@ -12,6 +13,7 @@ import vweb
 const (
 	// server = 'localhost'
 	port = 8000
+	v_version = vu.v_version
 )
 
 struct App {
@@ -36,6 +38,7 @@ pub fn (mut app App) init_once() {
 	app.vweb.serve_static('/css/style.css', './public/css/style.css', 'text/css')
 	// later disable previous mapping for css and check if/how to serve it as a generic static content ...
 	// note that template files now can be in the same folder, or under 'templates/' ...
+	println('vweb appl, built with V ${v_version}') // print V version (used at build time)
 }
 
 // initialization before any action
@@ -46,6 +49,8 @@ pub fn (mut app App) init() {
 // note that this requires template page 'index.html', or compile will fail ...
 fn (mut app App) index() vweb.Result {
 	app.cnt++ // sample, increment count number of page requests
+	// inject V version (used at build time) into template used here
+	// println('vweb appl, built with V ${v_version}') // print V version (used at build time)
     return $vweb.html()
 }
 
