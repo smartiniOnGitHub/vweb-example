@@ -13,6 +13,6 @@ Summary Changelog:
 - Feature: add 'v.mod' file to describe the application in V standard way
 - Feature: add 'Makefile' to simplify shell commands usage (tested on Linux)
 - Feature: add 'Dockerfile.run' to run main server binary 
-  (already built for now) inside a Docker container
+  (already built for now) inside a Docker container, based on Ubuntu
 
 ----

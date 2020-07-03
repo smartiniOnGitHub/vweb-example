@@ -40,6 +40,8 @@ note that all commands inside are for the Bash shell (so for Linux and similar s
 
 Latest V (vlang) stable, or built from latest sources.
 
+To run the application in a container, an updated version of Docker is needed.
+
 
 ## Note
 
