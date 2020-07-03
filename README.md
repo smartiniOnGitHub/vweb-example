@@ -28,8 +28,12 @@ Note that required resources are bundled inside the executable,
 or will be copied (by additional shell commands in build phase) in the same folder of the executable, 
 to ensure to have all consistent there.
 
-A make file (cmake) will be added to simplify shell commands execution and related dependencies, 
-just for convenience.
+A make file (cmake) has been added to simplify shell commands execution and related dependencies, 
+just for convenience; to run it with a default (informative only) task, do:
+```
+make
+```
+note that all commands inside are for the Bash shell (so for Linux and similar systems).
 
 
 ## Requirements
@@ -48,11 +52,12 @@ to simplify deploy.
 
 Just to have an idea, the minimal web server script ('server-minimal.v') 
 when built on a modern Linux distribution (like Ubuntu 20.04 LTS at 64 bit) is:
-- normal build: 365 KB
-- optimized build (for production): 53 KB
+- normal build: ranging from 365 KB to 420 KB
+- optimized build (for production): ranging from 53 KB to 120 KB
 and this is impressive.
 
-When building the same sources in Windows, executables are bigger (only a little).
+When building the same sources in Windows, executables are bigger 
+(double than Linux, approx.), but anyway very small even here.
 
 
 ## License
