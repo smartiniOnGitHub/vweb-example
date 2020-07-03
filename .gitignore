@@ -47,6 +47,8 @@ Thumbs.db
 *.tar.gz
 *.out
 *.lock
+*.tmp
+*.temp
 
 # executable and binary files files
 *.bin
