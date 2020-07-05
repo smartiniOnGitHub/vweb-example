@@ -15,10 +15,27 @@
  */
 module main
 
+import os
+import net.http
+
 // call the given HTTP health check route
 // to minimize its dimension, ensure to compile with all optimizations (for production) ...
 
 fn main() {
-	println("Call health check route at 'TODO: get from arguments' ...")
-	// TODO: implement the call ... wip
+	mut url := 'http://localhost:8000/health' // default URL for health check
+	if os.args.len > 1 {
+		url = os.args[1]
+	}
+	println("GET call for healthcheck at: ${url} ...")
+
+	resp := http.get(url) or {
+		println(err)
+		exit(1)
+	}
+	println(resp.text)
+
+	if resp.status_code != 200 {
+		exit(resp.status_code)
+	}
+
 }
