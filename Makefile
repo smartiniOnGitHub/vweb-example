@@ -33,9 +33,9 @@ all: info clean
 
 clean-local:
 	@echo "clean local binary artefacts (list manually updated)..."
-	@rm -f ./server
+	@rm -f ./server ./vweb-example
 	@cd healthcheck && rm -f ./healthcheck
-	@cd minimal && rm -f ./server-minimal
+	@cd minimal && rm -f ./server-minimal ./minimal
 
 clean: clean-local
 	@echo "clean output/temporary artefacts..."
@@ -108,7 +108,7 @@ run-container-dist:
 	@echo "Main traffic on host port $(PORT_HOST)..."
 	@docker run $(DOCKER_LOG_FLAGS) \
 		--rm --name $(NAME) \
-		-e "PORT=$(PORT_INTERNAL)" \
+		-e "PORT=$(PORT_HOST)" \
 		-e "ENVIRONMENT=${ENV}" \
 		-p $(PORT_HOST):$(PORT_INTERNAL) \
 		-d $(NAME):$(TAG)
