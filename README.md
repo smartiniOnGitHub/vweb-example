@@ -7,33 +7,23 @@ Example webapp with vweb (V integrated web framework).
 
 Ensure V is updated (maybe force an update with `v up`) and in PATH.
 
-To build and run V sources, for example it's enough to do:
-```
-v run server.v
-```
-executable will be generated in current folder.
-Otherwise, to generate normal executables in the 'build' folder do:
-```
-v -o build/server server.v
-v -o build/server-minimal server-minimal.v
-```
-and to generate production (optimized) executables in the 'dist' folder do:
-```
-v -o dist/server -prod server.v
-v -o dist/server-minimal -prod server-minimal.v
-```
-then go into desired folder, and run executable/s from there.
-
-Note that required resources are bundled inside the executable, 
-or will be copied (by additional shell commands in build phase) in the same folder of the executable, 
-to ensure to have all consistent there.
-
 A make file (cmake) has been added to simplify shell commands execution and related dependencies, 
 just for convenience; to run it with a default (informative only) task, do:
 ```
 make
 ```
-note that all commands inside are for the Bash shell (so for Linux and similar systems).
+all commands inside are for the Bash shell (so for Linux and similar systems).
+
+Note that required resources are bundled inside the executable, 
+or will be copied (by additional shell commands in build phase) in the same folder of the executable, 
+to ensure to have all consistent there.
+
+Inside this project there are other (utility) sources, moved in its own folder:
+- './healthcheck/' contains a command-line utility that calls the given HTTP endpoint 
+  to check its health status, useful for example when main server application is running in a container
+- './minimal/' contains a (very) minimal web application that only exposes 
+  a fixed message on its root route
+- others later ...
 
 
 ## Requirements
@@ -52,7 +42,7 @@ Executable files generated from V code are very small,
 and by default all published web resources are bundled inside executables 
 to simplify deploy.
 
-Just to have an idea, the minimal web server script ('server-minimal.v') 
+Just to have an idea, the minimal web server script ('server-minimal.v' -> 'vweb-minimal') 
 when built on a modern Linux distribution (like Ubuntu 20.04 LTS at 64 bit) is:
 - normal build: ranging from 365 KB to 420 KB
 - optimized build (for production): ranging from 53 KB to 120 KB

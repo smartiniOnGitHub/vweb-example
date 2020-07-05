@@ -33,8 +33,9 @@ all: info clean
 
 clean-local:
 	@echo "clean local binary artefacts (list manually updated)..."
-	@rm -f ./server && rm -f ./server-minimal
-	@rm -f ./healthcheck
+	@rm -f ./server
+	@cd healthcheck && rm -f ./healthcheck
+	@cd minimal && rm -f ./server-minimal
 
 clean: clean-local
 	@echo "clean output/temporary artefacts..."
@@ -44,32 +45,36 @@ clean: clean-local
 
 build-local: clean-local
 	@echo "Build all sources with destination in the same folder..."
-	@ # v .
-	@v server.v && v server-minimal.v
-	@ # v healthcheck*.v
+	@v .
+	@cd healthcheck && v .
+	@cd minimal && v .
 
 test:
 	@echo "Run Unit Test all sources..."
 	@v test .
 
-build: clean
+build:
 	@echo "Build all sources not optimized with destination in the folder './build'..."
-	@ # v -o ./build .
-	@v -o ./build/server server.v && v -o ./build/server-minimal server-minimal.v
+	@rm -rf ./build/*
+	@v -o ./build/vweb-example server.v
+	@cd minimal && v -o ../build/vweb-minimal server-minimal.v
+	@cd healthcheck && v -o ../build/healthcheck healthcheck.v
 	@cp -r ./public ./build # workaround for some resource still to add in binaries ...
 	@ls -la ./build
 
-dist: clean
+dist:
 	@echo "Build all sources optimized for production/release, with destination in the folder './dist'..."
-	@ # v -prod -o ./dist .
-	@v -prod -o ./dist/server server.v && v -prod -o ./dist/server-minimal server-minimal.v
+	@rm -rf ./dist/*
+	@v -prod -o ./dist/vweb-example server.v
+	@cd minimal && v -prod -o ../dist/vweb-minimal server-minimal.v
+	@cd healthcheck && v -prod -o ../dist/healthcheck healthcheck.v
 	@cp -r ./public ./dist # workaround for some resource still to add in binaries ...
 	@ls -la ./dist
 
 run-server:
 	@echo "Run server..."
 	@echo "If not present in current folder, run: 'make build-local' and re-run this."
-	@./server
+	@./vweb-example
 
 run: run-server
 	@echo "Run main application..."
@@ -77,12 +82,12 @@ run: run-server
 run-build:
 	@echo "Run main application not optimized, in the folder './build'..."
 	@echo "If not present in that folder, run: 'make build' and re-run this."
-	@cd ./build && ./server && cd ..
+	@cd ./build && ./vweb-example && cd ..
 
 run-dist:
 	@echo "Run main application optimized for production/release, in the folder './dist'..."
 	@echo "If not present in that folder, run: 'make dist' and re-run this."
-	@cd ./dist && ./server && cd ..
+	@cd ./dist && ./vweb-example && cd ..
 
 build-container: dist build-container-dist
 	@echo "Build optimized binaries and package in a Docker container..."
@@ -99,7 +104,8 @@ run-container: run-container-dist
 	@echo "Run Docker container..."
 
 run-container-dist:
-	@echo "Run Docker container with optimized binaries inside, on host port $(PORT_HOST)..."
+	@echo "Run Docker container with optimized binaries inside it..."
+	@echo "Main traffic on host port $(PORT_HOST)..."
 	@docker run $(DOCKER_LOG_FLAGS) \
 		--rm --name $(NAME) \
 		-e "PORT=$(PORT_INTERNAL)" \
@@ -120,6 +126,7 @@ run-container-id:
 run-container-logs:
 	# only for local usage, to exit from that console press <CTRL>C
 	@echo "Get logs of running container ($(NAME))..."
+	@echo "Main traffic on host port $(PORT_HOST)..."
 	@docker logs --follow --tail=1000 $(NAME)
 
 run-container-ps:

@@ -7,27 +7,23 @@ LABEL maintainer="Sandro Martini <sandro.martini@gmail.com>"
 # update packages, to reduce risk of vulnerabilities
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install --quiet -y openssl \
-    # && apt-get install --quiet -y libssl-dev \
-    # && apt-get install --quiet -y libssl-dev sqlite3 libsqlite3-dev \
     && apt-get autoclean && apt-get autoremove
 
 WORKDIR /app
 
 # copy application binary files (already built) and related resources
-COPY ./server .
-COPY ./server-minimal .
-# COPY ./healthcheck .
+COPY ./vweb-example .
+COPY ./healthcheck .
+# COPY ./vweb-minimal .
 COPY ./public/ ./public/
 
 EXPOSE 8000
 
 # add an healthcheck, useful
-# healthcheck with curl, but not recommended
-# HEALTHCHECK CMD curl --fail http://localhost:8000/health || exit 1
 # healthcheck by calling the additional script/application
 # HEALTHCHECK --interval=30s --timeout=10s --start-period=5s CMD healthcheck
 
-# ENTRYPOINT [ "./server" ]
-CMD [ "./server" ]
+# ENTRYPOINT [ "/app/vweb-example" ]
+CMD [ "./vweb-example" ]
 
 # end.

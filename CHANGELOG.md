@@ -14,5 +14,11 @@ Summary Changelog:
 - Feature: add 'Makefile' to simplify shell commands usage (tested on Linux)
 - Feature: add 'Dockerfile.run' to run main server binary 
   (already built for now) inside a Docker container, based on Ubuntu
+- Feature: move minimal server source in its own folder 'minimal' 
+  (but not in a nested module)), to avoid confision with main server source, 
+  and to be able to compile all without having to specify sources manually
+- Feature: add a command-line utility 'healthcheck' (in its own folder 'healthcheck') 
+  to call the given HTTP endpoint and check HTTP statup for health check 
+  (useful for example when main application is running in a container)
 
 ----
