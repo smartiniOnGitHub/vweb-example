@@ -20,5 +20,8 @@ Summary Changelog:
 - Feature: add a command-line utility 'healthcheck' (in its own folder 'healthcheck') 
   to call the given HTTP endpoint and check HTTP statup for health check 
   (useful for example when main application is running in a container)
+- Feature: add a route '/health' so that container runtimes or external utilities 
+  can call it to understand if the application is still alive 
+  (useful for example when main application is running in a container)
 
 ----

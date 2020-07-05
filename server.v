@@ -69,6 +69,11 @@ fn (mut app App) index() vweb.Result {
     return $vweb.html()
 }
 
+// sample health check route that exposes a fixed json reply at '/health'
+fn (mut app App) health() vweb.Result {
+	return app.vweb.json('{"statusCode": 200, "status":"ok"}')
+}
+
 fn (mut app App) header_footer() vweb.Result {
     return $vweb.html() // sample template page with hardcoded support for header and footer ...
 }
