@@ -62,7 +62,7 @@ pub fn (mut app App) init() {
 
 // serve some content on the root (index) route '/'
 // note that this requires template page 'index.html', or compile will fail ...
-fn (mut app App) index() vweb.Result {
+pub fn (mut app App) index() vweb.Result {
 	app.cnt++ // sample, increment count number of page requests
 	// inject V version (used at build time) into template used here
 	// println('vweb appl, built with V ${v_version}') // print V version (used at build time)
@@ -70,11 +70,11 @@ fn (mut app App) index() vweb.Result {
 }
 
 // sample health check route that exposes a fixed json reply at '/health'
-fn (mut app App) health() vweb.Result {
+pub fn (mut app App) health() vweb.Result {
 	return app.vweb.json('{"statusCode": 200, "status":"ok"}')
 }
 
-fn (mut app App) header_footer() vweb.Result {
+pub fn (mut app App) header_footer() vweb.Result {
     return $vweb.html() // sample template page with hardcoded support for header and footer ...
 }
 
@@ -82,7 +82,7 @@ fn (mut app App) header_footer() vweb.Result {
 // TODO: enable when include in templates will be fully working ... wip
 // serve a template with nested includes on the route '/includes'
 // note that this requires template page 'index.html', or compile will fail ...
-fn (mut app App) includes() vweb.Result {
+pub fn (mut app App) includes() vweb.Result {
     return $vweb.html() // sample template page with includes ...
 }
  */
@@ -90,7 +90,7 @@ fn (mut app App) includes() vweb.Result {
 // sample route that exposes a text reply at '/cookie'
 // show headers in the reply (as text), and set a sample cookie
 pub fn (mut app App) cookie() vweb.Result {
-	app.vweb.set_cookie('cookie', 'test')
+	app.vweb.set_cookie(name:'cookie', value:'test')
 	return app.vweb.text('Headers: $app.vweb.headers')
 }
 
@@ -100,7 +100,7 @@ pub fn (mut app App) hello() vweb.Result {
 }
 
 // sample route that exposes a json reply at '/hj'
-fn (mut app App) hj() vweb.Result {
+pub fn (mut app App) hj() vweb.Result {
 	return app.vweb.json('{"Hello":"World"}')
 }
 
