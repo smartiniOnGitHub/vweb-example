@@ -17,11 +17,11 @@ COPY ./healthcheck .
 # COPY ./vweb-minimal .
 COPY ./public/ ./public/
 
+# describe port/s opened in the container
 EXPOSE 8000
 
-# add an healthcheck, useful
-# healthcheck by calling the additional script/application
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s CMD healthcheck
+# add an healthcheck by calling the additional script/application
+HEALTHCHECK --interval=60s --timeout=10s --start-period=15s CMD ./healthcheck
 
 # ENTRYPOINT [ "/app/vweb-example" ]
 CMD [ "./vweb-example" ]
