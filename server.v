@@ -71,10 +71,18 @@ pub fn (mut app App) index() vweb.Result {
 
 // sample health check route that exposes a fixed json reply at '/health'
 pub fn (mut app App) health() vweb.Result {
-	return app.vweb.json('{"statusCode": 200, "status":"ok"}')
+	return app.vweb.json('{"statusCode":200, "status":"ok"}')
 }
 
-pub fn (mut app App) header_footer() vweb.Result {
+// sample readiness route that exposes a fixed json reply at '/ready'
+pub fn (mut app App) ready() vweb.Result {
+	// later add a wait for some seconds here, to simulate dependencies check ...
+	return app.vweb.json('{"statusCode":200, "status":"ok", 
+		"msg":"Dependencies now ok, ready to accept incoming traffic now"}
+	')
+}
+
+pub fn (mut app App) headerfooter() vweb.Result {
     return $vweb.html() // sample template page with hardcoded support for header and footer ...
 }
 
@@ -107,5 +115,16 @@ pub fn (mut app App) hj() vweb.Result {
 // sample route that exposes a json reply at '/time'
 pub fn (mut app App) time() vweb.Result {
 	now := time.now()
-	return app.vweb.json('{"timestamp": "${now.unix_time()}", "time":"$now"}')
+	return app.vweb.json('{"timestamp":"${now.unix_time()}", "time":"$now"}')
+}
+
+// sample route with a not existent path, that exposes a fixed json reply at '/not/existent'
+// expected an HTTP error 404 (not found)
+pub fn (mut app App) not_existent() vweb.Result {
+	return app.vweb.json('{"msg":"Should not see this reply"}')
+}
+
+// sample route with nested path, that exposes a fixed json reply at '/user/info'
+pub fn (mut app App) user_info() vweb.Result {
+	return app.vweb.json('{"msg":"Hi, it\'s me"}')
 }
