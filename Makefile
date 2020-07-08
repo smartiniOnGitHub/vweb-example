@@ -53,43 +53,85 @@ test:
 	@echo "Run Unit Test all sources..."
 	@v test .
 
-build:
-	@echo "Build all sources not optimized with destination in the folder './build'..."
+clean-build:
+	@echo "Clean the folder './build'..."
 	@rm -rf ./build/*
+
+clean-dist:
+	@echo "Clean the folder './dist'..."
+	@rm -rf ./dist/*
+
+build: build-normal
+	@echo "Build all sources, in the folder './build'..."
+
+build-normal: clean-build
+	@echo "Build all sources not optimized, in the folder './build'..."
+	@touch ./build/build-normal.out
 	@v -o ./build/vweb-example server.v
 	@cd minimal && v -o ../build/vweb-minimal server-minimal.v
 	@cd healthcheck && v -o ../build/healthcheck healthcheck.v
-	@cp -r ./public ./build # workaround for some resource still to add in binaries ...
 	@ls -la ./build
 
-dist:
-	@echo "Build all sources optimized for production/release, with destination in the folder './dist'..."
-	@rm -rf ./dist/*
-	@v -prod -o ./dist/vweb-example server.v
-	@cd minimal && v -prod -o ../dist/vweb-minimal server-minimal.v
-	@cd healthcheck && v -prod -o ../dist/healthcheck healthcheck.v
+build-optimized: clean-build
+	@echo "Build all sources optimized, in the folder './build'..."
+	@touch ./build/build-optimized.out
+	@v -o ./build/vweb-example -prod server.v
+	@cd minimal && v -o ../build/vweb-minimal -prod server-minimal.v
+	@cd healthcheck && v -o ../build/healthcheck -prod healthcheck.v
+	@ls -la ./build
+
+# build-static: clean-build
+# 	@echo "Build all sources not optimized and with libraries statically linked, in the folder './build'..."
+# 	@touch ./build/build-static.out
+# 	@v -o ./build/vweb-example -freestanding server.v
+# 	@cd minimal && v -o ../build/vweb-minimal -freestanding server-minimal.v
+# 	@cd healthcheck && v -o ../build/healthcheck -freestanding healthcheck.v
+# 	@ls -la ./build
+# 
+# build-optimized-static: clean-build
+# 	@echo "Build all sources optimized and with libraries statically linked, in the folder './build'..."
+# 	@touch ./build/build-optimized-static.out
+# 	@v -o ./build/vweb-example -prod -freestanding server.v
+# 	@cd minimal && v -o ../build/vweb-minimal -prod -freestanding server-minimal.v
+# 	@cd healthcheck && v -o ../build/healthcheck -prod -freestanding healthcheck.v
+# 	@ls -la ./build
+
+dist: clean-dist
+	@echo "Setup all resources in the folder './dist'..."
+	@echo "To build executables, before run one of 'build*' tasks via make..."
+	@cp -r ./build/* ./dist
 	@cp -r ./public ./dist # workaround for some resource still to add in binaries ...
 	@ls -la ./dist
 
-run-server:
-	@echo "Run server..."
+run: run-dist
+	@echo "Run main application..."
+
+run-local:
+	@echo "Run server in main folder..."
 	@echo "If not present in current folder, run: 'make build-local' and re-run this."
 	@./vweb-example
 
-run: run-server
-	@echo "Run main application..."
-
 run-build:
-	@echo "Run main application not optimized, in the folder './build'..."
+	@echo "Run main application from already built executables, in the folder './build'..."
 	@echo "If not present in that folder, run: 'make build' and re-run this."
 	@cd ./build && ./vweb-example && cd ..
 
 run-dist:
-	@echo "Run main application optimized for production/release, in the folder './dist'..."
+	@echo "Run main application from already built executables, in the folder './dist'..."
 	@echo "If not present in that folder, run: 'make dist' and re-run this."
 	@cd ./dist && ./vweb-example && cd ..
 
-build-container: dist build-container-dist
+
+build-and-run: build dist run
+	@echo "Build and Run main application..."
+
+build-optimized-and-run: build-optimized dist run
+	@echo "Build and Run main application optimized..."
+
+
+# container-related tasks
+
+build-container: build-optimized-static dist build-container-dist
 	@echo "Build optimized binaries and package in a Docker container..."
 
 build-container-dist:
