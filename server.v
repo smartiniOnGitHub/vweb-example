@@ -76,7 +76,8 @@ pub fn (mut app App) health() vweb.Result {
 
 // sample readiness route that exposes a fixed json reply at '/ready'
 pub fn (mut app App) ready() vweb.Result {
-	// later add a wait for some seconds here, to simulate dependencies check ...
+	// wait for some seconds here, to simulate a real dependencies check (and a slow reply) ...
+	time.sleep(10) // wait for 10 seconds
 	return app.vweb.json('{"statusCode":200, "status":"ok", 
 		"msg":"Dependencies ok, ready to accept incoming traffic now"}
 	')
