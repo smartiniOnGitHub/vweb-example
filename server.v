@@ -78,7 +78,7 @@ pub fn (mut app App) health() vweb.Result {
 pub fn (mut app App) ready() vweb.Result {
 	// later add a wait for some seconds here, to simulate dependencies check ...
 	return app.vweb.json('{"statusCode":200, "status":"ok", 
-		"msg":"Dependencies now ok, ready to accept incoming traffic now"}
+		"msg":"Dependencies ok, ready to accept incoming traffic now"}
 	')
 }
 
@@ -124,7 +124,8 @@ pub fn (mut app App) not_existent() vweb.Result {
 	return app.vweb.json('{"msg":"Should not see this reply"}')
 }
 
-// sample route with nested path, that exposes a fixed json reply at '/user/info'
-pub fn (mut app App) user_info() vweb.Result {
+// sample route with nested path, that exposes a fixed json reply at '/user/:id'
+// later check if this route mapping is good, and how to read the given id ...
+pub fn (mut app App) user_id() vweb.Result {
 	return app.vweb.json('{"msg":"Hi, it\'s me"}')
 }
