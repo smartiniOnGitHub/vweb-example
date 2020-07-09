@@ -12,7 +12,7 @@ Summary Changelog:
 - Feature: add Apache License header to all source files
 - Feature: add 'v.mod' file to describe the application in V standard way
 - Feature: add 'Makefile' to simplify shell commands usage (tested on Linux)
-- Feature: add 'Dockerfile.run' to run main server binary 
+- Feature: add 'Dockerfile.run.ubuntu' to run main server binary 
   (already built for now) inside a Docker container, based on Ubuntu
 - Feature: move minimal server source in its own folder 'minimal' 
   (but not in a nested module)), to avoid confision with main server source, 

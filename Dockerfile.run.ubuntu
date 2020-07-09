@@ -1,12 +1,14 @@
 FROM ubuntu AS release
 
 LABEL version="1.0.0"
-LABEL description="Example Vweb (V) webapp Docker Image"
+LABEL description="Example vweb (V) webapp Docker Image"
 LABEL maintainer="Sandro Martini <sandro.martini@gmail.com>"
 
 # update packages, to reduce risk of vulnerabilities
-RUN apt-get update && apt-get upgrade -y \
+RUN DEBIAN_FRONTEND=noninteractive \
+    && apt-get update && apt-get upgrade -y \
     && apt-get install --quiet -y openssl \
+    # && apt-get install --quiet -y --no-install-recommends libssl-dev libsqlite3-dev && \
     && apt-get autoclean && apt-get autoremove
 
 WORKDIR /app
