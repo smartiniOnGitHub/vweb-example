@@ -105,7 +105,7 @@ pub fn (mut app App) cookie() vweb.Result {
 
 // sample route that exposes a text reply at '/hello'
 pub fn (mut app App) hello() vweb.Result {
-	return app.vweb.text('Hello world from vweb at ${time.now().format()}')
+	return app.vweb.text('Hello world from vweb at ${time.now().format_ss()}')
 }
 
 // sample route that exposes a json reply at '/hj'
