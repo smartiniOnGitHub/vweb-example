@@ -61,6 +61,12 @@ clean-dist:
 	@echo "Clean the folder './dist'..."
 	@rm -rf ./dist/*
 
+fix-build:
+	@sudo chown $(USER):$(USER) -R ./build/*
+
+fix-dist:
+	@sudo chown $(USER):$(USER) -R ./dist/*
+
 build: build-normal
 	@echo "Build all sources, in the folder './build'..."
 
@@ -74,25 +80,34 @@ build-normal: clean-build
 
 build-optimized: clean-build
 	@echo "Build all sources optimized, in the folder './build'..."
+	@echo "note that this requires 'upx' installed (to compress executables)"
 	@touch ./build/build-optimized.out
-	@v -prod -o ./build/vweb-example server.v
-	@cd minimal && v -prod -o ../build/vweb-minimal server-minimal.v
-	@cd healthcheck && v -prod -o ../build/healthcheck healthcheck.v
-	@ls -la ./build
-
-build-static: clean-build
-	@echo "Build all sources not optimized and with libraries statically linked, in the folder './build'..."
-	@touch ./build/build-static.out
-	@$(eval opts := -cg -cflags '--static')
-	v ${opts} -o ./build/vweb-example server.v
+	@$(eval opts := -prod -compress)
+	@v ${opts} -o ./build/vweb-example server.v
 	@cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
 	@ls -la ./build
 
+build-static: clean-build
+	@echo "Build all sources not optimized and with libraries statically linked, in the folder './build'..."
+	@echo "note that this requires 'musl-gcc' installed (default in Alpine Linux)"
+	@touch ./build/build-static.out
+	# @ $ (eval opts := -cg -cflags '--static')
+	# @ $ (eval opts := -cg -cc musl-gcc -cflags '--static')
+	# @ $ (eval opts := -cg -cc musl-gcc -cflags '--static -I/usr/local/include/openssl -L/usr/local/lib')
+	@$(eval opts := -cg -cc musl-gcc -cflags '--static' -I/usr/local/include/openssl -L/usr/local/lib)
+	v ${opts} -o ./build/vweb-example server.v
+	# @ cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
+	# @ cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
+	@ls -la ./build
+
 build-optimized-static: clean-build
 	@echo "Build all sources optimized and with libraries statically linked, in the folder './build'..."
+	@echo "note that this requires 'musl-gcc' installed (default in Alpine Linux)"
+	@echo "note that this requires 'upx' installed (to compress executables)"
 	@touch ./build/build-optimized-static.out
-	@$(eval opts := -cg -cflags '--static'  -prod)
+	@$(eval opts := -cflags '--static' -prod -compress)
+	@ # TODO: add arguments for static, like in the previous task ...
 	@v ${opts} -o ./build/vweb-example server.v
 	@cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
