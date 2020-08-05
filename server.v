@@ -44,13 +44,13 @@ fn main() {
 
 // initialization of webapp
 pub fn (mut app App) init_once() {
-	app.vweb.serve_static('/favicon.ico', './public/img/favicon.ico', 'image/x-icon')
+	app.vweb.serve_static('/favicon.ico', 'public/img/favicon.ico', 'image/x-icon')
 	// publish static content from a specific folder
 	// app.vweb.handle_static('.') // serve static content from current folder
 	// app.vweb.handle_static('public') // serve static content from folder './public'
 	// but note that it doesn't work with templates ...
 	// so add an explicit reference to css ...
-	app.vweb.serve_static('/css/style.css', './public/css/style.css', 'text/css')
+	app.vweb.serve_static('/css/style.css', 'public/css/style.css', 'text/css')
 	// later disable previous mapping for css and check if/how to serve it as a generic static content ...
 	// note that template files now can be in the same folder, or under 'templates/' ...
 	println('vweb appl, built with V ${v_version}') // print V version (used at build time)
@@ -125,8 +125,9 @@ pub fn (mut app App) not_existent() vweb.Result {
 	return app.vweb.json('{"msg":"Should not see this reply"}')
 }
 
-// sample route with nested path, that exposes a fixed json reply at '/user/:id'
-// later check if this route mapping is good, and how to read the given id ...
-pub fn (mut app App) user_id() vweb.Result {
-	return app.vweb.json('{"msg":"Hi, it\'s me"}')
+// sample route with nested path, that exposes a fixed json reply at '/user/:id' and '/user/:id/info'
+['/user/:id']
+['/user/:id/info']
+pub fn (mut app App) user_info(user string) vweb.Result {
+	return app.vweb.json('{"msg":"Hi, it\'s me (user: $user)"}')
 }
