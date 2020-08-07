@@ -59,6 +59,7 @@ pub fn (mut app App) init_once() {
 	// later disable previous mapping for css and check if/how to serve it as a generic static content ...
 	// note that template files now can be in the same folder, or under 'templates/' ...
 	app.vweb.serve_static('/img/GitHub-Mark-Light-32px.png', 'public/img/GitHub-Mark-Light-32px.png', 'image/png')
+
 	println('vweb appl, built with V ${v_version}') // print V version (used at build time)
 }
 
@@ -66,6 +67,7 @@ pub fn (mut app App) init_once() {
 pub fn (mut app App) init() {
 	// url := app.vweb.req.url
 	// println('${@FN}: url=$url')
+	// println('${@FN}: total number of page requested (but not other content)=$app.cnt')
 	// app.logged_in = app.logged_in()
 }
 
@@ -78,8 +80,7 @@ pub fn (mut app App) to_home() vweb.Result {
 // note that this requires template page 'index.html', or compile will fail ...
 pub fn (mut app App) index() vweb.Result {
 	app.cnt++ // sample, increment count number of page requests
-	// inject V version (used at build time) into template used here
-	// println('vweb appl, built with V ${v_version}') // print V version (used at build time)
+	// many variables, like V version (set at build time) are automatically injected into template files
     return $vweb.html()
 }
 
@@ -98,6 +99,7 @@ pub fn (mut app App) ready() vweb.Result {
 }
 
 pub fn (mut app App) headerfooter() vweb.Result {
+	app.cnt++ // sample, increment count number of page requests
     return $vweb.html() // sample template page with hardcoded support for header and footer ...
 }
 
@@ -106,6 +108,7 @@ pub fn (mut app App) headerfooter() vweb.Result {
 // serve a template with nested includes on the route '/includes'
 // note that this requires template page 'index.html', or compile will fail ...
 pub fn (mut app App) includes() vweb.Result {
+	app.cnt++ // sample, increment count number of page requests
     return $vweb.html() // sample template page with includes ...
 }
  */
