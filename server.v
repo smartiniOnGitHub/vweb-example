@@ -32,9 +32,14 @@ const (
 )
 
 struct App {
+	version   string
+mut:
+	html_path vweb.RawHtml
 pub mut:
-    vweb vweb.Context
-	cnt  int // sample, to count number of page requests
+    vweb      vweb.Context
+	cnt       int // sample, to count number of page requests
+	logged_in bool // sample, tell if user is logged in
+	// user      User
 }
 
 fn main() {
@@ -53,11 +58,20 @@ pub fn (mut app App) init_once() {
 	app.vweb.serve_static('/css/style.css', 'public/css/style.css', 'text/css')
 	// later disable previous mapping for css and check if/how to serve it as a generic static content ...
 	// note that template files now can be in the same folder, or under 'templates/' ...
+	app.vweb.serve_static('/img/GitHub-Mark-Light-32px.png', 'public/img/GitHub-Mark-Light-32px.png', 'image/png')
 	println('vweb appl, built with V ${v_version}') // print V version (used at build time)
 }
 
 // initialization before any action
 pub fn (mut app App) init() {
+	// url := app.vweb.req.url
+	// println('${@FN}: url=$url')
+	// app.logged_in = app.logged_in()
+}
+
+// redirect to home page
+pub fn (mut app App) to_home() vweb.Result {
+	return app.vweb.redirect('/')
 }
 
 // serve some content on the root (index) route '/'
