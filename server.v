@@ -28,9 +28,6 @@ const (
 	// server          = 'localhost'
 	port            = 8000
 	v_version       = vu.v_version
-	// app_module      = @VMOD_FILE // resolved at compile time
-	// app_name        = 'vweb-example'
-	// unknown_version = '0.0.0'
 )
 
 struct App {
@@ -44,37 +41,18 @@ pub mut:
 	// user      User
 }
 
-/*
-// get app info from its module
-[deprecated] // 'Use compiler speudo variable VMOD_FILE instead'
-fn get_app_info_from_module() vmod.Manifest {
-	manifest := vmod.from_file('./v.mod') or {
-		vmod.Manifest{
-			name: app_name, version: unknown_version
-		} // return an (almost) empty manifest
-	}
-	$if debug {
-		println('vweb appl, module manifest: ${manifest}') // print app module
-	}
-	return manifest
-}
- */
-
 // set application metadata from application module
 fn (mut app App) set_app_metadata() {
-	// println('application module data: ${app_module}')
-	// app.metadata = get_app_info_from_module()
-	// simpler approach, get metadata from application module at build time; then set other stuff as deprecated and comment ...
-	// later check if move in a utility function (to return a default value instead of panic, etc ...)
+	// get metadata from application module at build time and set in in application
 	app.metadata = vmod.decode( @VMOD_FILE ) or {
 		panic(err)
 	}
 	// add some extra data, like: built-with/V version, etc
 	app.metadata.unknown['v-version'] << v_version
 	app.metadata.unknown['framework'] << 'vweb'
-//	$if debug {
+	$if debug {
 		println('application metadata (from module): ${app.metadata}')
-//	}
+	}
 }
 
 // set application mappings for static content(assets, etc)
@@ -209,7 +187,5 @@ pub fn (mut app App) mystatus() vweb.Result {
 ['/info']
 pub fn (mut app App) app_info() vweb.Result {
 	return app.vweb.text(app.metadata.str())
-	// later convert metadata (or a part of it) to json and return it, for a better output ...
-	// return app.vweb.json('{"name":"${app.metadata.name}", "version":"${app.metadata.version}"}')
 }
 
