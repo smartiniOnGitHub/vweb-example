@@ -17,6 +17,7 @@ module main
 
 import time
 import v.util as vu
+import v.vmod as vmod
 import vweb
 
 // expose a simple, minimal web server
@@ -26,20 +27,39 @@ import vweb
 // later check if/how to bind to a specific network interface (like '0.0.0.0'), to be able to expose even whrn running in a container for example ...
 
 const (
-	// server = 'localhost'
-	port = 8000
-	v_version = vu.v_version
+	// server          = 'localhost'
+	port            = 8000
+	v_version       = vu.v_version
+	app_name        = 'vweb-example'
+	unknown_version = '0.0.0'
+	// manifest        = get_app_info_from_module() // run at compile time ... but not possible at the moment
 )
 
 struct App {
-	version   string
 mut:
-	html_path vweb.RawHtml
+	// some metadata; later check if use a Map instead ...
+	// name      string = manifest.name
+	// version   string = manifest.version
+	metadata vmod.Manifest
+	// html_path vweb.RawHtml
 pub mut:
     vweb      vweb.Context
 	cnt       int // sample, to count number of page requests
 	logged_in bool // sample, tell if user is logged in
 	// user      User
+}
+
+// get app info from its module
+fn get_app_info_from_module() vmod.Manifest {
+	manifest := vmod.from_file('./v.mod') or {
+		vmod.Manifest{
+			name: app_name, version: unknown_version
+		} // return an (almost) empty manifest
+	}
+	$if debug {
+		println('vweb appl, module manifest: ${manifest}') // print app module
+	}
+	return manifest
 }
 
 fn main() {
@@ -49,6 +69,10 @@ fn main() {
 
 // initialization of webapp
 pub fn (mut app App) init_once() {
+	// set application metadata
+	app.metadata = get_app_info_from_module()
+
+	// map static content (assets, etc)
 	app.vweb.serve_static('/favicon.ico', 'public/img/favicon.ico', 'image/x-icon')
 	// publish static content from a specific folder
 	// app.vweb.handle_static('.') // serve static content from current folder
@@ -60,6 +84,8 @@ pub fn (mut app App) init_once() {
 	// note that template files now can be in the same folder, or under 'templates/' ...
 	app.vweb.serve_static('/img/GitHub-Mark-Light-32px.png', 'public/img/GitHub-Mark-Light-32px.png', 'image/png')
 
+	// initialization done
+	println('${app.metadata.name}-${app.metadata.version} initialized')
 	println('vweb appl, built with V ${v_version}') // print V version (used at build time)
 }
 
@@ -158,3 +184,14 @@ pub fn (mut app App) mystatus() vweb.Result {
 	// return app.vweb.set_status(403, 'Forbidden').text('Cannot access resource')
 	// return app.vweb.set_status(406, 'My error message').json('{"msg":"My HTTP status code and message"}')
 }
+
+// sample route with application info (metadata), with a json reply at '/info'
+['/info']
+pub fn (mut app App) app_info() vweb.Result {
+	// return app.vweb.json('{"name":"${app.metadata.name}", "version":"${app.metadata.version}"}')
+	return app.vweb.json('{"metadata":"${app.metadata}"}')
+	// TODO: convert metadata in json, for output ... wip
+	// TODO: add a link to '/info', check if in main menu or with other links ... wip
+}
+
+
