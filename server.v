@@ -149,12 +149,12 @@ pub fn (mut app App) user_info(user string) vweb.Result {
 	return app.vweb.json('{"msg":"Hi, it\'s me (user: $user)"}')
 }
 
-/*
-// enable when set_status will be available, and add a link to this route in index ...
 // sample route with an application selected HTTP status code, that exposes a fixed json reply at '/mystatus'
 // (the given code must be a valid code, in the range 100..599)
 pub fn (mut app App) mystatus() vweb.Result {
-	app.vweb.set_status(406, 'My error message') // 406 Not Acceptable, as a sample I change here its description in the reply
+	app.vweb.set_status(406, 'My error description') // 406 Not Acceptable, as a sample I change here its description in the reply
 	return app.vweb.json('{"msg":"My HTTP status code and message"}')
+	// the same, shorter way, but not implemented yet
+	// return app.vweb.set_status(403, 'Forbidden').text('Cannot access resource')
+	// return app.vweb.set_status(406, 'My error message').json('{"msg":"My HTTP status code and message"}')
 }
- */
