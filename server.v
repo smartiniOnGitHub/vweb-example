@@ -23,24 +23,19 @@ import vweb
 // expose a simple, minimal web server
 // to use it for simple benchmarks, ensure to compile with all optimizations (for production) ...
 // note that at the moment there is no reload of resources when the server is started ... later check if/how to achieve it ...
-// later check how to disable vweb write page requests to console log ...
-// later check if/how to bind to a specific network interface (like '0.0.0.0'), to be able to expose even whrn running in a container for example ...
 
 const (
 	// server          = 'localhost'
 	port            = 8000
 	v_version       = vu.v_version
-	app_name        = 'vweb-example'
-	unknown_version = '0.0.0'
-	// manifest        = get_app_info_from_module() // run at compile time ... but not possible at the moment
+	// app_module      = @VMOD_FILE // resolved at compile time
+	// app_name        = 'vweb-example'
+	// unknown_version = '0.0.0'
 )
 
 struct App {
 mut:
-	// some metadata; later check if use a Map instead ...
-	// name      string = manifest.name
-	// version   string = manifest.version
-	metadata vmod.Manifest
+	metadata vmod.Manifest // some metadata; later check if use a Map instead ...
 	// html_path vweb.RawHtml
 pub mut:
     vweb      vweb.Context
@@ -49,7 +44,9 @@ pub mut:
 	// user      User
 }
 
+/*
 // get app info from its module
+[deprecated] // 'Use compiler speudo variable VMOD_FILE instead'
 fn get_app_info_from_module() vmod.Manifest {
 	manifest := vmod.from_file('./v.mod') or {
 		vmod.Manifest{
@@ -61,18 +58,27 @@ fn get_app_info_from_module() vmod.Manifest {
 	}
 	return manifest
 }
+ */
 
-fn main() {
-	// println("Server listening on 'http://${server}:${port}' ...")
-    vweb.run<App>(port)
+// set application metadata from application module
+fn (mut app App) set_app_metadata() {
+	// println('application module data: ${app_module}')
+	// app.metadata = get_app_info_from_module()
+	// simpler approach, get metadata from application module at build time; then set other stuff as deprecated and comment ...
+	// later check if move in a utility function (to return a default value instead of panic, etc ...)
+	app.metadata = vmod.decode( @VMOD_FILE ) or {
+		panic(err)
+	}
+	// add some extra data, like: built-with/V version, etc
+	app.metadata.unknown['v-version'] << v_version
+	app.metadata.unknown['framework'] << 'vweb'
+//	$if debug {
+		println('application metadata (from module): ${app.metadata}')
+//	}
 }
 
-// initialization of webapp
-pub fn (mut app App) init_once() {
-	// set application metadata
-	app.metadata = get_app_info_from_module()
-
-	// map static content (assets, etc)
+// set application mappings for static content(assets, etc)
+fn (mut app App) set_app_static_mappings() {
 	app.vweb.serve_static('/favicon.ico', 'public/img/favicon.ico', 'image/x-icon')
 	// publish static content from a specific folder
 	// app.vweb.handle_static('.') // serve static content from current folder
@@ -83,6 +89,21 @@ pub fn (mut app App) init_once() {
 	// later disable previous mapping for css and check if/how to serve it as a generic static content ...
 	// note that template files now can be in the same folder, or under 'templates/' ...
 	app.vweb.serve_static('/img/GitHub-Mark-Light-32px.png', 'public/img/GitHub-Mark-Light-32px.png', 'image/png')
+}
+
+// entry point og the application
+fn main() {
+	// println("Server listening on 'http://${server}:${port}' ...")
+    vweb.run<App>(port)
+}
+
+// initialization of webapp
+pub fn (mut app App) init_once() {
+	// set application metadata
+	app.set_app_metadata()
+
+	// map static content (assets, etc)
+	app.set_app_static_mappings()
 
 	// initialization done
 	println('${app.metadata.name}-${app.metadata.version} initialized')
@@ -181,17 +202,14 @@ pub fn (mut app App) mystatus() vweb.Result {
 	app.vweb.set_status(406, 'My error description') // 406 Not Acceptable, as a sample I change here its description in the reply
 	return app.vweb.json('{"msg":"My HTTP status code and message"}')
 	// the same, shorter way, but not implemented yet
-	// return app.vweb.set_status(403, 'Forbidden').text('Cannot access resource')
 	// return app.vweb.set_status(406, 'My error message').json('{"msg":"My HTTP status code and message"}')
 }
 
-// sample route with application info (metadata), with a json reply at '/info'
+// sample route with application info (metadata), with a reply at '/info'
 ['/info']
 pub fn (mut app App) app_info() vweb.Result {
+	return app.vweb.text(app.metadata.str())
+	// later convert metadata (or a part of it) to json and return it, for a better output ...
 	// return app.vweb.json('{"name":"${app.metadata.name}", "version":"${app.metadata.version}"}')
-	return app.vweb.json('{"metadata":"${app.metadata}"}')
-	// TODO: convert metadata in json, for output ... wip
-	// TODO: add a link to '/info', check if in main menu or with other links ... wip
 }
-
 
