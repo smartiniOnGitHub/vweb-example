@@ -18,7 +18,7 @@ _old/
 # bin/
 build/
 dist/
-docs/
+# docs/
 out/
 private/
 temp/
