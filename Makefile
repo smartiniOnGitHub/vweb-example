@@ -90,30 +90,21 @@ build-optimized: clean-build
 
 build-static: clean-build
 	@echo "Build all sources not optimized and with libraries statically linked, in the folder './build'..."
-	@echo "note that this requires 'musl-gcc' installed (default in Alpine Linux)"
+	@echo "note that this requires 'musl-gcc' installed (default in Alpine Linux) and libraries built with musl"
 	@touch ./build/build-static.out
-	# @ $ (eval opts := -cg -cflags '--static')
-	# @ $ (eval opts := -cg -cc musl-gcc -cflags '--static')
-	# @ $ (eval opts := -cg -cc musl-gcc -cflags '--static -I/usr/local/include -L/usr/local/lib')
-	# do some tests here ... then remove this line and retry (but in another line) with standard paths (with symbolic links there) ...
-	# @ $ (eval opts := -cg -cc musl-gcc -cflags '--static -I/usr/include/x86_64-linux-musl -I/usr/include -L/usr/lib/x86_64-linux-gnu')
-	# @ $ (eval opts := -cg -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl') # build ok with this, but still need some linker flags ...
-	# @ $ (eval opts := -cg -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/lib/x86_64-linux-gnu -lssl -lcrypto') # build ok with this, but linker errors ...
-	# @ $ (eval opts := -cg -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/lib/x86_64-linux-gnu -l:libssl.a -l:libcrypto.a') # build ok with this, but linker errors ...
-	# @ $ (eval opts := -cg -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -l:libssl.a') # build ok with this, and link ok (using a static version of OpenSSL built with musl-gcc) ...
-	@$(eval opts := -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -l:libssl.a') # build ok with this, and link ok (using a static version of OpenSSL built with musl-gcc) ...
-	v ${opts} -o ./build/vweb-example server.v
-	# @ cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
-	# @ cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
+	@$(eval opts := -cg -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
+	@v ${opts} -o ./build/vweb-example server.v
+	@cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
+	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
 	@ls -la ./build
 
 build-optimized-static: clean-build
 	@echo "Build all sources optimized and with libraries statically linked, in the folder './build'..."
-	@echo "note that this requires 'musl-gcc' installed (default in Alpine Linux)"
+	@echo "note that this requires 'musl-gcc' installed (default in Alpine Linux) and libraries built with musl"
 	@echo "note that this requires 'upx' installed (to compress executables)"
 	@touch ./build/build-optimized-static.out
-	@$(eval opts := -cflags '--static' -prod -compress)
-	@ # TODO: add arguments for static, like in the previous task ...
+	# TODO: check if keep compression here ...
+	@$(eval opts := -prod -compress -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
 	@v ${opts} -o ./build/vweb-example server.v
 	@cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
@@ -124,7 +115,6 @@ dist: clean-dist
 	@echo "To build executables, before run one of 'build*' tasks via make..."
 	@cp -r ./build/* ./dist
 	@cp -r ./public ./dist # workaround for some resource still to add in binaries ...
-	# @ cp ./v.mod ./dist # copy app module, workaround to let the app get some info ...
 	@ls -la ./dist
 
 run: run-dist
