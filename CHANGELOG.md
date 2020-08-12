@@ -33,5 +33,8 @@ Summary Changelog:
 - Feature: add other routes
 - Feature: build executables in a static way, using MUSL libraries
   (this will be used later even with some Docker containers, trying to use the 'scratch' base image)
+- Feature: add 'Dockerfile.run.scratch' to run main server binary 
+  (already built for now, and in a static way with MUSL libraries) inside a Docker container, based on scratch 
+  (so empty and containing only application files)
 
 ----

@@ -94,7 +94,7 @@ build-static: clean-build
 	@touch ./build/build-static.out
 	@$(eval opts := -cg -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
 	@v ${opts} -o ./build/vweb-example server.v
-	@cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
+	# @ cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
 	@ls -la ./build
 
@@ -103,10 +103,9 @@ build-optimized-static: clean-build
 	@echo "note that this requires 'musl-gcc' installed (default in Alpine Linux) and libraries built with musl"
 	@echo "note that this requires 'upx' installed (to compress executables)"
 	@touch ./build/build-optimized-static.out
-	# TODO: check if keep compression here ...
 	@$(eval opts := -prod -compress -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
 	@v ${opts} -o ./build/vweb-example server.v
-	@cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
+	# @ cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
 	@ls -la ./build
 
@@ -160,8 +159,18 @@ build-container-ubuntu:
 		&& cd ..
 	@docker images "$(NAME)*"
 
+build-container-scratch:
+	@$(eval dfile := Dockerfile.run.scratch)
+	@echo "Build Docker container (based on scratch, so minimal) for run ('${dfile}'), using optimized binaries (statically built)..."
+	@echo "If files aren't present in the folder './dist': "\
+		"run one of make build*-static tasks, then 'make dist' and re-run this."
+	@cd ./dist && cp ../${dfile} . \
+		&& docker build -t $(NAME):$(TAG) -f ./${dfile} . \
+		&& cd ..
+	@docker images "$(NAME)*"
+
 run-container: run-container-dist
-	@echo "Run Docker container..."
+	@echo "Run Docker container $(NAME)..."
 
 run-container-dist:
 	@echo "Run Docker container with optimized binaries inside it..."
