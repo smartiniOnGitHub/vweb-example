@@ -36,5 +36,8 @@ Summary Changelog:
 - Feature: add 'Dockerfile.run.scratch' to run main server binary 
   (already built for now, and in a static way with MUSL libraries) inside a Docker container, based on scratch 
   (so empty and containing only application files)
+- Feature: add 'Dockerfile.alpine' that uses V official Docker images to build and run 
+  in a multistage image, with all layers derived from Alpine 
+  (but no static build here, for simplicity)
 
 ----

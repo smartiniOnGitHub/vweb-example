@@ -28,6 +28,10 @@ Inside this project there are other (utility) sources, moved in its own folder:
   a fixed message on its root route
 - others later ...
 
+Note that there are many Dockerfiles (and related make tasks), to use different base images; 
+see details in the 'Makefile'. To build sources in containers, it's recommended to use 
+official vlang Docker images, otherwise dependencies must be added manually.
+
 In the [docs](./docs/) folder there is other documentation.
 
 

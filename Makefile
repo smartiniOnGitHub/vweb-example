@@ -43,7 +43,13 @@ clean: clean-local
 	@rm -rf ./dist  && mkdir -p ./dist
 	@rm -rf ./temp  && mkdir -p ./temp
 
-build-local: clean-local
+setup: 
+	@echo "setup folder structure etc..."
+	@mkdir -p ./build
+	@mkdir -p ./dist
+	@mkdir -p ./temp
+
+build-local: clean-local setup
 	@echo "Build all sources with destination in the same folder..."
 	@v .
 	@cd healthcheck && v .
@@ -70,7 +76,7 @@ fix-dist:
 build: build-normal
 	@echo "Build all sources, in the folder './build'..."
 
-build-normal: clean-build
+build-normal: clean-build setup
 	@echo "Build all sources not optimized, in the folder './build'..."
 	@touch ./build/build-normal.out
 	@v -o ./build/vweb-example server.v
@@ -78,7 +84,7 @@ build-normal: clean-build
 	@cd healthcheck && v -o ../build/healthcheck healthcheck.v
 	@ls -la ./build
 
-build-optimized: clean-build
+build-optimized: clean-build setup
 	@echo "Build all sources optimized, in the folder './build'..."
 	@echo "note that this requires 'upx' installed (to compress executables)"
 	@touch ./build/build-optimized.out
@@ -88,7 +94,7 @@ build-optimized: clean-build
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
 	@ls -la ./build
 
-build-static: clean-build
+build-static: clean-build setup
 	@echo "Build all sources not optimized and with libraries statically linked, in the folder './build'..."
 	@echo "note that this requires 'musl-gcc' installed (default in Alpine Linux) and libraries built with musl"
 	@touch ./build/build-static.out
@@ -98,7 +104,7 @@ build-static: clean-build
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
 	@ls -la ./build
 
-build-optimized-static: clean-build
+build-optimized-static: clean-build setup
 	@echo "Build all sources optimized and with libraries statically linked, in the folder './build'..."
 	@echo "note that this requires 'musl-gcc' installed (default in Alpine Linux) and libraries built with musl"
 	@echo "note that this requires 'upx' installed (to compress executables)"
@@ -149,6 +155,12 @@ build-optimized-and-run: build-optimized dist run
 build-container: build-optimized dist build-container-ubuntu
 	@echo "Build optimized binaries and package in a Docker container based on ubuntu..."
 
+build-container-alpine:
+	@$(eval dfile := Dockerfile.alpine)
+	@echo "Build sources and run in a Docker container (alpine based) for run ('${dfile}'), using optimized binaries..."
+	@docker build -t $(NAME):$(TAG) -f ./${dfile} .
+	@docker images "$(NAME)*"
+
 build-container-ubuntu:
 	@$(eval dfile := Dockerfile.run.ubuntu)
 	@echo "Build Docker container (ubuntu based) for run ('${dfile}'), using optimized binaries..."
@@ -188,6 +200,12 @@ run-container-interactive-ubuntu:
 	@$(eval she := bash)
 	@echo "Run an interactive shell ($(she)) into the running container ($(NAME))..."
 	@docker run $(DOCKER_LOG_FLAGS) --rm -it --name $(NAME) $(NAME):$(TAG) $(she)
+
+run-container-console-alpine:
+	# only for local usage, an interactive console in the running container is opened
+	@$(eval she := ash)
+	@echo "Run an interactive shell into the running container ($(NAME))..."
+	@docker exec -it $(NAME) $(she)
 
 run-container-console-ubuntu:
 	# only for local usage, an interactive console in the running container is opened
