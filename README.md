@@ -1,5 +1,8 @@
 # vweb-example
 
+  [![Docker Pulls](https://img.shields.io/docker/pulls/smartiniatdocker09/vweb-example.svg)](https://hub.docker.com/r/smartiniatdocker09/vweb-example/)
+  [![Apache 2.0 License](https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat)](./LICENSE)
+
 Example webapp with vweb (V integrated web framework).
 
 
@@ -25,6 +28,8 @@ Inside this project there are other (utility) sources, moved in its own folder:
   a fixed message on its root route
 - others later ...
 
+In the [docs](./docs/) folder there is other documentation.
+
 
 ## Requirements
 
@@ -48,10 +53,11 @@ when built on a modern Linux distribution (like Ubuntu 20.04 LTS at 64 bit) is:
 - normal build optimized (for production and compressed): from 25 KB to 50 KB
 - static build (no external libraries): approx. 3.8 MB
 - static build optimized (no external libraries): approx. 1.1 MB
-and all this is impressive.
+
+all this is impressive.
 
 When building the same sources in Windows, executables are bigger 
-(double than Linux, approx.), but anyway very small even here.
+(double than Linux, approx.), but anyway very small.
 
 
 ## License
