@@ -94,7 +94,7 @@ build-optimized: clean-build setup
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
 	@ls -la ./build
 
-build-static: clean-build setup
+build-static-ubuntu: clean-build setup
 	@echo "Build all sources not optimized and with libraries statically linked, in the folder './build'..."
 	@echo "note that this requires 'musl-gcc' installed (default in Alpine Linux) and libraries built with musl"
 	@touch ./build/build-static.out
@@ -104,13 +104,26 @@ build-static: clean-build setup
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
 	@ls -la ./build
 
-build-optimized-static: clean-build setup
+build-optimized-static-ubuntu: clean-build setup
 	@echo "Build all sources optimized and with libraries statically linked, in the folder './build'..."
-	@echo "note that this requires 'musl-gcc' installed (default in Alpine Linux) and libraries built with musl"
+	@echo "note that this requires 'musl-gcc' installed and libraries built with musl"
 	@echo "note that this requires 'upx' installed (to compress executables)"
 	@touch ./build/build-optimized-static.out
 	@$(eval opts := -prod -compress -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
 	@v ${opts} -o ./build/vweb-example server.v
+	# @ cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
+	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
+	@ls -la ./build
+
+build-optimized-static-alpine: clean-build setup
+	@echo "Build all sources optimized and with libraries statically linked, in the folder './build'..."
+	@echo "note that this requires 'musl' libraries (default in Alpine Linux) and other libraries built with musl"
+	@echo "note that this requires 'upx' installed (to compress executables)"
+	@touch ./build/build-optimized-static.out
+	# @ $ (eval opts := -prod -compress -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
+	# TODO: cleanup after all is working even here ... wip
+	@$(eval opts := -prod -compress -cflags '--static')
+	@v ${opts} -cg -o ./build/vweb-example server.v
 	# @ cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
 	@ls -la ./build
@@ -150,14 +163,18 @@ build-optimized-and-run: build-optimized dist run
 
 # container-related tasks
 
-# TODO: add tasks to use the right Dockerfile, depending on use cases; add alpine and scratch ...
-
 build-container: build-optimized dist build-container-ubuntu
 	@echo "Build optimized binaries and package in a Docker container based on ubuntu..."
 
 build-container-alpine:
 	@$(eval dfile := Dockerfile.alpine)
 	@echo "Build sources and run in a Docker container (alpine based) for run ('${dfile}'), using optimized binaries..."
+	@docker build -t $(NAME):$(TAG) -f ./${dfile} .
+	@docker images "$(NAME)*"
+
+build-container-alpine-scratch:
+	@$(eval dfile := Dockerfile.scratch)
+	@echo "Build sources in a Docker container (alpine based) and run in a minimal (scratch based) one, for run ('${dfile}'), using optimized binaries (statically built)..."
 	@docker build -t $(NAME):$(TAG) -f ./${dfile} .
 	@docker images "$(NAME)*"
 
@@ -195,11 +212,21 @@ run-container-dist:
 		-d $(NAME):$(TAG)
 
 run-container-interactive-ubuntu:
-	# only for local usage, only an interactive console in the running container is opened
+	# only for local usage, an interactive console is opened in the running container
 	# mainly for debugging purposes, so no env vars are needed in this run, and no detached mode
 	@$(eval she := bash)
 	@echo "Run an interactive shell ($(she)) into the running container ($(NAME))..."
 	@docker run $(DOCKER_LOG_FLAGS) --rm -it --name $(NAME) $(NAME):$(TAG) $(she)
+
+run-container-interactive-alpine-dev:
+	# only for local usage, an interactive console is opened in the alpine-dev image/container
+	# mainly for debugging purposes, so no env vars are needed in this run, and no detached mode
+	@$(eval she := ash)
+	@$(eval NAME := thevlang/vlang)
+	@$(eval TAG  := alpine-dev)
+	@$(eval NAME_SANITIZED := $(shell echo "${NAME}" | tr A-Z a-z | sed 's/@/_/;s/\//_/') )
+	@echo "Run an interactive shell ($(she)) into the running container ($(NAME_SANITIZED))..."
+	@docker run $(DOCKER_LOG_FLAGS) --rm -it --name $(NAME_SANITIZED) $(NAME):$(TAG) $(she)
 
 run-container-console-alpine:
 	# only for local usage, an interactive console in the running container is opened
