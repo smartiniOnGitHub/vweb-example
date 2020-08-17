@@ -34,10 +34,16 @@ Summary Changelog:
 - Feature: build executables in a static way, using MUSL libraries
   (this will be used later even with some Docker containers, trying to use the 'scratch' base image)
 - Feature: add 'Dockerfile.run.scratch' to run main server binary 
-  (already built for now, and in a static way with MUSL libraries) inside a Docker container, based on scratch 
-  (so empty and containing only application files)
+  (already built for now, and in a static way with MUSL libraries) inside a Docker container, 
+  based on scratch (so empty and containing only application files)
 - Feature: add 'Dockerfile.alpine' that uses V official Docker images to build and run 
   in a multistage image, with all layers derived from Alpine 
   (but no static build here, for simplicity)
+- Feature: add 'Dockerfile.scratch' that uses a multistage image with 
+  as first stage the V official Docker image 'alpine-dev' to build 
+  (but in a static way, so no external dependencies out of executables built) 
+  and for the second stage, the 'scratch' (empty) image; this images is really tiny 
+  because there is nothing other than application executables and resources inside id
+  (no shell, no system commands, etc), so safer to run (but harder to debug)
 
 ----
