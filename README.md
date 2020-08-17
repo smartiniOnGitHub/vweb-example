@@ -31,6 +31,9 @@ Inside this project there are other (utility) sources, moved in its own folder:
 Note that there are many Dockerfiles (and related make tasks), to use different base images; 
 see details in the 'Makefile'. To build sources in containers, it's recommended to use 
 official vlang Docker images, otherwise dependencies must be added manually.
+When executables are built with static dependencies (all inside it), it's even possible 
+to run them in a special Docker image ('scratch') empty, so really minimal and safer 
+(no shell inside and nothing other than my executables and related resources).
 
 In the [docs](./docs/) folder there is other documentation.
 

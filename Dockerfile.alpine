@@ -9,7 +9,8 @@ WORKDIR /src
 
 COPY . .
 
-RUN make build-optimized && make dist && cd ./dist
+RUN make build-optimized && make dist
+
 
 # use vlang alpine-base image, 
 # otherwise use a standard alpine but add runtime libraries for musl, openssl (and maybe others)

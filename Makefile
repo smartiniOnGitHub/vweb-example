@@ -120,10 +120,8 @@ build-optimized-static-alpine: clean-build setup
 	@echo "note that this requires 'musl' libraries (default in Alpine Linux) and other libraries built with musl"
 	@echo "note that this requires 'upx' installed (to compress executables)"
 	@touch ./build/build-optimized-static.out
-	# @ $ (eval opts := -prod -compress -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
-	# TODO: cleanup after all is working even here ... wip
 	@$(eval opts := -prod -compress -cflags '--static')
-	@v ${opts} -cg -o ./build/vweb-example server.v
+	@v ${opts} -o ./build/vweb-example server.v
 	# @ cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
 	@ls -la ./build
@@ -168,13 +166,15 @@ build-container: build-optimized dist build-container-ubuntu
 
 build-container-alpine:
 	@$(eval dfile := Dockerfile.alpine)
-	@echo "Build sources and run in a Docker container (alpine based) for run ('${dfile}'), using optimized binaries..."
+	@echo "Build sources and run in a Docker container (alpine based) for run ('${dfile}'), "\
+		"using optimized binaries..."
 	@docker build -t $(NAME):$(TAG) -f ./${dfile} .
 	@docker images "$(NAME)*"
 
 build-container-alpine-scratch:
 	@$(eval dfile := Dockerfile.scratch)
-	@echo "Build sources in a Docker container (alpine based) and run in a minimal (scratch based) one, for run ('${dfile}'), using optimized binaries (statically built)..."
+	@echo "Build sources in a Docker container (alpine based) and run in a minimal (scratch based) one, "\
+		"for run ('${dfile}'), using optimized binaries (statically built)..."
 	@docker build -t $(NAME):$(TAG) -f ./${dfile} .
 	@docker images "$(NAME)*"
 
@@ -190,7 +190,8 @@ build-container-ubuntu:
 
 build-container-scratch:
 	@$(eval dfile := Dockerfile.run.scratch)
-	@echo "Build Docker container (based on scratch, so minimal) for run ('${dfile}'), using optimized binaries (statically built)..."
+	@echo "Build Docker container (based on scratch, so minimal) for run ('${dfile}'), "\
+		"using optimized binaries (statically built)..."
 	@echo "If files aren't present in the folder './dist': "\
 		"run one of make build*-static tasks, then 'make dist' and re-run this."
 	@cd ./dist && cp ../${dfile} . \
