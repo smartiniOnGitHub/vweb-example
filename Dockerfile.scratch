@@ -2,17 +2,17 @@ FROM thevlang/vlang:alpine-dev AS builder
 
 # update packages, to reduce risk of vulnerabilities
 RUN apk update && apk upgrade
-RUN apk --no-cache add upx
+RUN apk --no-cache add openssl-libs-static upx
 # RUN apk cache clean
 
 WORKDIR /src
 
 COPY . .
 
-RUN make build-optimized-static-alpine && make dist && cd ./dist
+RUN make build-optimized-static-alpine && make dist
 
-# TODO: use scratch image here (and add musl and openssl libraries)  ... wip
-FROM thevlang/vlang:alpine-base AS runtime
+
+FROM scratch AS runtime
 
 LABEL version="1.0.0"
 LABEL description="Example vweb (V) webapp Docker Image"
