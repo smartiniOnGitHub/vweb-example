@@ -17,7 +17,7 @@ module main
 
 import time
 import v.util as vu
-import v.vmod as vmod
+import v.vmod
 import vweb
 
 // expose a simple, minimal web server
