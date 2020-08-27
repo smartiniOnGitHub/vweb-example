@@ -45,5 +45,6 @@ Summary Changelog:
   and for the second stage, the 'scratch' (empty) image; this images is really tiny 
   because there is nothing other than application executables and resources inside id
   (no shell, no system commands, etc), so safer to run (but harder to debug)
+- Feature: use V integrated logging, both in server source and in healthcheck (for consistency)
 
 ----

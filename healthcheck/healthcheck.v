@@ -15,6 +15,7 @@
  */
 module main
 
+import log
 import os
 import net.http
 
@@ -26,15 +27,18 @@ fn main() {
 	if os.args.len > 1 {
 		url = os.args[1]
 	}
-	println("GET call for healthcheck at: ${url} ...")
+	mut log := log.Log{}
+	log.set_level(.info) // default logging level
+	log.info('healthcheck, doing a GET call at: ${url} ...')
 
 	resp := http.get(url) or {
-		println(err)
+		log.error(err)
 		exit(1)
 	}
-	println(resp.text)
+	log.info(resp.text)
 
 	if resp.status_code != 200 {
+		log.error('healthcheck, got response not ok: ${resp.status_code} ...')
 		exit(resp.status_code)
 	}
 
