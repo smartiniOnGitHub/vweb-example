@@ -19,6 +19,7 @@ _old/
 build/
 dist/
 # docs/
+logs/
 out/
 private/
 temp/
@@ -47,6 +48,7 @@ Thumbs.db
 *.tar.gz
 *.out
 *.lock
+*.log*
 *.tmp
 *.temp
 

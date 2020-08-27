@@ -26,6 +26,7 @@ info:
 	@v version
 	@echo "Main tasks here are: "
 	@echo "all, test, run, build, dist, run, etc"
+	@echo "For a quick build and run, use the task: build-and-run"
 	@echo "Look into Makefile for details and other tasks ..."
 	@echo "----"
 

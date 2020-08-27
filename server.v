@@ -15,6 +15,7 @@
  */
 module main
 
+import log
 import time
 import v.util as vu
 import v.vmod
@@ -28,11 +29,14 @@ const (
 	// server          = 'localhost'
 	port            = 8000
 	v_version       = vu.v_version
+	log_level       = log.Level.info // set to .debug for more logging
+	// log_file        = './logs/server.log'
 )
 
 struct App {
 mut:
-	metadata vmod.Manifest // some metadata; later check if use a Map instead ...
+	log       log.Log = log.Log{} // integrated logging
+	metadata  vmod.Manifest // some metadata; later check if use a Map instead ...
 	// html_path vweb.RawHtml
 pub mut:
     vweb      vweb.Context
@@ -41,17 +45,26 @@ pub mut:
 	// user      User
 }
 
+// set application configuration
+fn (mut app App) set_app_config() {
+	// instance and configures logging, etc
+	app.log.set_level(log_level)
+	// app.log.set_full_logpath(log_file)
+	app.log.info('Logging level set to ${log_level}')
+}
+
 // set application metadata from application module
 fn (mut app App) set_app_metadata() {
 	// get metadata from application module at build time and set in in application
 	app.metadata = vmod.decode( @VMOD_FILE ) or {
+		app.log.fatal('unable to fing V module file')
 		panic(err)
 	}
 	// add some extra data, like: built-with/V version, etc
 	app.metadata.unknown['v-version'] << v_version
 	app.metadata.unknown['framework'] << 'vweb'
 	$if debug {
-		println('application metadata (from module): ${app.metadata}')
+		app.log.info('application metadata (from module): ${app.metadata}')
 	}
 }
 
@@ -77,6 +90,10 @@ fn main() {
 
 // initialization of webapp
 pub fn (mut app App) init_once() {
+	app.log.info("Application initialization ...")
+	// config application
+	app.set_app_config()
+
 	// set application metadata
 	app.set_app_metadata()
 
@@ -84,15 +101,15 @@ pub fn (mut app App) init_once() {
 	app.set_app_static_mappings()
 
 	// initialization done
-	println('${app.metadata.name}-${app.metadata.version} initialized')
-	println('vweb appl, built with V ${v_version}') // print V version (used at build time)
+	app.log.info('${app.metadata.name}-${app.metadata.version} initialized')
+	app.log.info('vweb appl, built with V ${v_version}') // print V version (set at build time)
 }
 
 // initialization before any action
 pub fn (mut app App) init() {
 	// url := app.vweb.req.url
-	// println('${@FN}: url=$url')
-	// println('${@FN}: total number of page requested (but not other content)=$app.cnt')
+	// app.log.debug('${@FN}: url=$url')
+	app.log.debug('${@FN}: total number of page requested (but not other content)=$app.cnt')
 	// app.logged_in = app.logged_in()
 }
 
