@@ -1,16 +1,9 @@
-FROM thevlang/vlang:ubuntu-build AS builder
+FROM thevlang/vlang:alpine-dev AS builder
 
 # update packages, to reduce risk of vulnerabilities
-RUN DEBIAN_FRONTEND=noninteractive \
-    && apt-get update && apt-get upgrade -y \
-    && apt-get install --quiet -y openssl upx \
-    # && apt-get install --quiet -y --no-install-recommends libssl-dev libsqlite3-dev && \
-    && apt-get autoclean && apt-get autoremove
-
-# build V
-WORKDIR /opt/vlang
-RUN git clone https://github.com/vlang/v /opt/vlang \ 
-    && make CC=clang && v -version && v symlink
+RUN apk update && apk upgrade
+RUN apk --no-cache add upx
+# RUN apk cache clean
 
 # copy and build application sources
 WORKDIR /src
@@ -18,18 +11,16 @@ COPY . .
 RUN make build-optimized && make dist
 
 
-# use a standard ubuntu image, 
-FROM ubuntu AS runtime
+# use standard alpine image 
+FROM alpine AS runtime
 
 LABEL version="1.0.0"
 LABEL description="Example vweb (V) webapp Docker Image"
 LABEL maintainer="Sandro Martini <sandro.martini@gmail.com>"
 
 # update packages, to reduce risk of vulnerabilities
-RUN DEBIAN_FRONTEND=noninteractive \
-    && apt-get update && apt-get upgrade -y \
-    && apt-get install --quiet -y openssl \
-    && apt-get autoclean && apt-get autoremove
+RUN apk update && apk upgrade \
+    && apk add --no-cache openssl
 
 WORKDIR /app
 COPY --from=builder /src/dist/ .
