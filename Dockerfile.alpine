@@ -5,10 +5,9 @@ RUN apk update && apk upgrade
 RUN apk --no-cache add upx
 # RUN apk cache clean
 
+# copy and build application sources
 WORKDIR /src
-
 COPY . .
-
 RUN make build-optimized && make dist
 
 
