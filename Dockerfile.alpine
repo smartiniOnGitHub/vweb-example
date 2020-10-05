@@ -20,8 +20,10 @@ LABEL version="1.0.0"
 LABEL description="Example vweb (V) webapp Docker Image"
 LABEL maintainer="Sandro Martini <sandro.martini@gmail.com>"
 
-WORKDIR /app
+# update packages, to reduce risk of vulnerabilities
+RUN apk update && apk upgrade
 
+WORKDIR /app
 COPY --from=builder /src/dist/ .
 # RUN ls -la /app
 
