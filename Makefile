@@ -179,6 +179,13 @@ build-container-alpine-scratch:
 	@docker build -t $(NAME):$(TAG) -f ./${dfile} .
 	@docker images "$(NAME)*"
 
+build-container-ubuntu:
+	@$(eval dfile := Dockerfile.ubuntu)
+	@echo "Build sources and run in a Docker container (ubuntu based) for run ('${dfile}'), "\
+		"using optimized binaries..."
+	@docker build -t $(NAME):$(TAG) -f ./${dfile} .
+	@docker images "$(NAME)*"
+
 build-container-for-run-ubuntu:
 	@$(eval dfile := Dockerfile.run.ubuntu)
 	@echo "Build Docker container (ubuntu based) for run ('${dfile}'), using optimized binaries..."
@@ -270,6 +277,10 @@ clean-container:
 	# @docker rm $(NAME):$(TAG)
 	# @docker rm $(shell docker ps -a -q)
 	@docker rmi $(NAME):$(TAG)
+
+clean-container-old:
+	@echo "Clean old containers..."
+	@docker system prune -f
 
 
 # others
