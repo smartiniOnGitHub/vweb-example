@@ -162,6 +162,12 @@ build-optimized-and-run: build-optimized dist run
 
 # container-related tasks
 
+build-container:
+	@$(eval dfile := Dockerfile)
+	@echo "Build sources and run in a Docker container for run ('${dfile}'), using optimized binaries..."
+	@docker build -t $(NAME):$(TAG) -f ./${dfile} .
+	@docker images "$(NAME)*"
+
 build-container-alpine:
 	@$(eval dfile := Dockerfile.alpine)
 	@echo "Build sources and run in a Docker container (alpine based) for run ('${dfile}'), "\
