@@ -1,6 +1,6 @@
 # Change Log
 
-## [0.1.0](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.1.0) (unreleased)
+## [0.1.0](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.1.0) (2020-10-05)
 Summary Changelog:
 - Doc: First release, with minimal set of features
 - Doc: add initial documentation
