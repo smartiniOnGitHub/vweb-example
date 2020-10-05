@@ -162,7 +162,7 @@ build-optimized-and-run: build-optimized dist run
 
 # container-related tasks
 
-build-container: build-optimized dist build-container-ubuntu
+build-container: build-optimized dist build-container-for-run-ubuntu
 	@echo "Build optimized binaries and package in a Docker container based on ubuntu..."
 
 build-container-alpine:
@@ -179,7 +179,7 @@ build-container-alpine-scratch:
 	@docker build -t $(NAME):$(TAG) -f ./${dfile} .
 	@docker images "$(NAME)*"
 
-build-container-ubuntu:
+build-container-for-run-ubuntu:
 	@$(eval dfile := Dockerfile.run.ubuntu)
 	@echo "Build Docker container (ubuntu based) for run ('${dfile}'), using optimized binaries..."
 	@echo "If files aren't present in the folder './dist': "\
@@ -189,7 +189,7 @@ build-container-ubuntu:
 		&& cd ..
 	@docker images "$(NAME)*"
 
-build-container-scratch:
+build-container-for-run-scratch:
 	@$(eval dfile := Dockerfile.run.scratch)
 	@echo "Build Docker container (based on scratch, so minimal) for run ('${dfile}'), "\
 		"using optimized binaries (statically built)..."
