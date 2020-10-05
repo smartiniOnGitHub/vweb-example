@@ -38,15 +38,23 @@ Summary Changelog:
   based on scratch (so empty and containing only application files)
 - Feature: add 'Dockerfile.alpine' that uses V official Docker images to build and run 
   in a multistage image, with all layers derived from Alpine 
-  (but no static build here, for simplicity)
+  (but no static build here, for simplicity); 
+  approx. image size  12 MB
 - Feature: add 'Dockerfile.scratch' that uses a multistage image with 
   as first stage the V official Docker image 'alpine-dev' to build 
   (but in a static way, so no external dependencies out of executables built) 
   and for the second stage, the 'scratch' (empty) image; this images is really tiny 
   because there is nothing other than application executables and resources inside id
-  (no shell, no system commands, etc), so safer to run (but harder to debug)
+  (no shell, no system commands, etc), so safer to run (but harder to debug); 
+  approx. image size   2.2 MB (1.1 MB for the webapp, and 1.1 MB for the healthcheck app)
 - Feature: add 'Dockerfile.ubuntu' that uses V official Docker images to build and run 
-  in a multistage image, with all layers derived from Ubuntu 
+  in a multistage image, with all layers derived from Ubuntu; 
+  approx. image size 125 MB
+- Feature: add a default 'Dockerfile' that uses V official Docker images in first stage to build sources, 
+  and a standard Alpine image for the second stage (for the run); 
+  all was good in a similar way with Ubuntu derived images (the vlang one and the standard one respectively), 
+  but final images was bigger (approx. 110 MB instead of 10 MB for the Alpine based), 
+  so I think that the Alpine based as default makes sense here
 - Feature: use V integrated logging, both in server source and in healthcheck (for consistency)
 
 ----
