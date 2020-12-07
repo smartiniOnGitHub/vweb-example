@@ -1,4 +1,5 @@
 .PHONY: info clean clean-local all build dist
+.DEFAULT_GOAL := info
 
 # app environment
 ENV ?= dev
