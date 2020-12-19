@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.1.1](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.1.1) (2020-12-19)
+Summary Changelog:
+- General: Remove warning from compilation with latest V 0.1.30.x
+- Feature: update build commands to use even the flag '-autofree' to automatically cleanup memory, 
+  but only in optimized builds (for 'production')
+- Feature: add a make task as a shortcut to do some simple load/performances test, 
+  useful even to diagnostic memory usage, etc
+
 ## [0.1.0](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.1.0) (2020-10-05)
 Summary Changelog:
 - Doc: First release, with minimal set of features

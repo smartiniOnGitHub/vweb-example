@@ -90,7 +90,7 @@ build-optimized: clean-build setup
 	@echo "Build all sources optimized, in the folder './build'..."
 	@echo "note that this requires 'upx' installed (to compress executables)"
 	@touch ./build/build-optimized.out
-	@$(eval opts := -prod -compress)
+	@$(eval opts := -autofree -prod -compress)
 	@v ${opts} -o ./build/vweb-example server.v
 	@cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
@@ -111,7 +111,7 @@ build-optimized-static-ubuntu: clean-build setup
 	@echo "note that this requires 'musl-gcc' installed and libraries built with musl"
 	@echo "note that this requires 'upx' installed (to compress executables)"
 	@touch ./build/build-optimized-static.out
-	@$(eval opts := -prod -compress -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
+	@$(eval opts := -autofree -prod -compress -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
 	@v ${opts} -o ./build/vweb-example server.v
 	# @ cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
@@ -122,7 +122,7 @@ build-optimized-static-alpine: clean-build setup
 	@echo "note that this requires 'musl' libraries (default in Alpine Linux) and other libraries built with musl"
 	@echo "note that this requires 'upx' installed (to compress executables)"
 	@touch ./build/build-optimized-static.out
-	@$(eval opts := -prod -compress -cflags '--static')
+	@$(eval opts := -autofree -prod -compress -cflags '--static')
 	@v ${opts} -o ./build/vweb-example server.v
 	# @ cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
@@ -291,3 +291,7 @@ clean-container-old:
 
 
 # others
+
+bench-simple:
+	@echo "Simple benchmark using 'ab' (run it in another terminal)..."
+	@ab -n 100000 -c 8 http://localhost:8000/

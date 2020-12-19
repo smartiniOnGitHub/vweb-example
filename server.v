@@ -185,7 +185,7 @@ pub fn (mut app App) not_existent() vweb.Result {
 }
 
 // sample route with nested path, that exposes a fixed json reply at '/user/:id' and '/user/:id/info'
-['/user/:id']
+// ['/user/:id'] // commented to avoid compiler warning on method arguments mismatch ...
 ['/user/:id/info']
 pub fn (mut app App) user_info(user string) vweb.Result {
 	return app.vweb.json('{"msg":"Hi, it\'s me (user: $user)"}')
