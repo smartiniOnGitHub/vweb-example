@@ -26,8 +26,7 @@ const (
 )
 
 struct App {
-pub mut:
-    vweb vweb.Context
+    vweb.Context // using embedded struct
 }
 
 fn main() {
@@ -37,8 +36,8 @@ fn main() {
 
 // initialization of webapp
 pub fn (mut app App) init_once() {
-	// app.vweb.handle_static('.') // serve static content from current folder
-	// app.vweb.handle_static('public') // serve static content from folder './public'
+	// app.handle_static('.') // serve static content from current folder
+	// app.handle_static('public') // serve static content from folder './public'
 	// note that template files now can be in the same folder, or under 'templates/' ...
 }
 
@@ -49,6 +48,7 @@ pub fn (mut app App) init() {
 // serve some content on the root (index) route '/'
 // note that this implementation doesn't requires a template page ...
 pub fn (mut app App) index() vweb.Result {
-	return app.vweb.json('{"hello": "world"}')
+	app.json('{"hello": "world"}')
+	return vweb.Result{}
 }
 
