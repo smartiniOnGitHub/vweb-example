@@ -295,3 +295,11 @@ clean-container-old:
 bench-simple:
 	@echo "Simple benchmark using 'ab' (run it in another terminal)..."
 	@ab -n 100000 -c 8 http://localhost:8000/
+
+valgrind-check-for-memory-leaks-summary:
+	@echo "Check for memory leaks in the 'vweb-example' using 'valgrind' (run it in another terminal)..."
+	@cd dist && valgrind --log-file="vweb-example-valgrind-summary.log" ./vweb-example
+
+valgrind-check-for-memory-leaks-details:
+	@echo "Check for memory leaks in the 'vweb-example' using 'valgrind' (run it in another terminal)..."
+	@cd dist && valgrind --leak-check=full --show-leak-kinds=all --log-file="vweb-example-valgrind-details.log" ./vweb-example

@@ -10,6 +10,7 @@ Summary Changelog:
   so for example look for my other sources here, and try to build them one per time 
   (to identify the real problem); here I had to update even 'server-minimal.v' for example
 - Feature: split page count (cnt variable) in cnt_page and cnt_api (for api calls)
+- Feature: add some make tasks to simplify local tests, diagnostics, troubleshooting
 
 ## [0.1.1](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.1.1) (2020-12-19)
 Summary Changelog:
