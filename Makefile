@@ -88,7 +88,7 @@ build-normal: clean-build setup
 
 build-optimized: clean-build setup
 	@echo "Build all sources optimized, in the folder './build'..."
-	@echo "note that this requires 'upx' installed (to compress executables)"
+	@echo "note that this requires 'upx' installed (to compress/strip executables)"
 	@touch ./build/build-optimized.out
 	@$(eval opts := -autofree -prod -compress)
 	@v ${opts} -o ./build/vweb-example server.v
@@ -109,7 +109,7 @@ build-static-ubuntu: clean-build setup
 build-optimized-static-ubuntu: clean-build setup
 	@echo "Build all sources optimized and with libraries statically linked, in the folder './build'..."
 	@echo "note that this requires 'musl-gcc' installed and libraries built with musl"
-	@echo "note that this requires 'upx' installed (to compress executables)"
+	@echo "note that this requires 'upx' installed (to compress/strip executables)"
 	@touch ./build/build-optimized-static.out
 	@$(eval opts := -autofree -prod -compress -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
 	@v ${opts} -o ./build/vweb-example server.v
@@ -120,7 +120,7 @@ build-optimized-static-ubuntu: clean-build setup
 build-optimized-static-alpine: clean-build setup
 	@echo "Build all sources optimized and with libraries statically linked, in the folder './build'..."
 	@echo "note that this requires 'musl' libraries (default in Alpine Linux) and other libraries built with musl"
-	@echo "note that this requires 'upx' installed (to compress executables)"
+	@echo "note that this requires 'upx' installed (to compress/strip executables)"
 	@touch ./build/build-optimized-static.out
 	@$(eval opts := -autofree -prod -compress -cflags '--static')
 	@v ${opts} -o ./build/vweb-example server.v
@@ -159,6 +159,15 @@ build-and-run: build dist run
 
 build-optimized-and-run: build-optimized dist run
 	@echo "Build and Run main application optimized..."
+
+compress-dist-executables: dist
+	@echo "Compress executables (not already optimized/compressed), in the folder './dist'..."
+	@echo "note that this requires 'upx' installed (to compress/strip executables)"
+	@touch ./dist/compress-executables.out
+	@upx dist/healthcheck
+	@upx dist/vweb-example
+	@upx dist/vweb-minimal
+	@ls -la ./dist
 
 
 # container-related tasks
