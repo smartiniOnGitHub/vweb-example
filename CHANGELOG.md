@@ -1,12 +1,12 @@
 # Change Log
 
-## [0.2.0](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.2.0) (unreleased)
+## [0.2.0](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.2.0) (2021-01-23)
 Summary Changelog:
 - General: Update requirements to latest V 0.2.2 or later, 
   because now I use embedded structs to simplify the code (great addition even to vweb)
 - General: currently, due to some problems in V 0.2.x with 'autofree' mode 
   (needed to avoid memory leaks), optimized builds here won't work; 
-  so **for now** use only normal (non optimized and with memory leaks) builds
+  so **for now** optimized builds won't use it, but of course this will be re-enabled later
 - General: small tweaks and alignment to other vweb examples tailored for 0.2.x
 - General: in case of compiler error for vweb applications (with code generated ot build time), 
   currently related source is not shown in errors (but only vweb sources), 
@@ -14,7 +14,7 @@ Summary Changelog:
   (to identify the real problem); here I had to update even 'server-minimal.v' for example
 - Feature: split page count (cnt variable) in cnt_page and cnt_api (for api calls)
 - Feature: add some make tasks to simplify local tests, diagnostics, troubleshooting, 
-  compress/strip executables built in non optimized mode, etc
+  compress/strip executables (not already compressed), etc
 
 ## [0.1.1](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.1.1) (2020-12-19)
 Summary Changelog:
