@@ -7,6 +7,10 @@ ENV ?= dev
 REPO = vweb-example
 BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 COMMIT = $(shell git rev-parse --short HEAD)
+# compiler flags
+# COMPILER_OPTIMIZE_FLAGS = -autofree -prod -compress
+# COMPILER_OPTIMIZE_FLAGS = -autofree -prod # do compress manually
+COMPILER_OPTIMIZE_FLAGS = -prod # no autofree for now, and do compress manually
 # container related vars
 NAME ?= $(REPO)
 # NAME ?= $(REPO)_$(BRANCH)_$(COMMIT)
@@ -90,7 +94,7 @@ build-optimized: clean-build setup
 	@echo "Build all sources optimized, in the folder './build'..."
 	@echo "note that this requires 'upx' installed (to compress/strip executables)"
 	@touch ./build/build-optimized.out
-	@$(eval opts := -autofree -prod -compress)
+	@$(eval opts := ${COMPILER_OPTIMIZE_FLAGS})
 	@v ${opts} -o ./build/vweb-example server.v
 	@cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
@@ -111,7 +115,7 @@ build-optimized-static-ubuntu: clean-build setup
 	@echo "note that this requires 'musl-gcc' installed and libraries built with musl"
 	@echo "note that this requires 'upx' installed (to compress/strip executables)"
 	@touch ./build/build-optimized-static.out
-	@$(eval opts := -autofree -prod -compress -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
+	@$(eval opts := ${COMPILER_OPTIMIZE_FLAGS} -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
 	@v ${opts} -o ./build/vweb-example server.v
 	# @ cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
@@ -122,18 +126,31 @@ build-optimized-static-alpine: clean-build setup
 	@echo "note that this requires 'musl' libraries (default in Alpine Linux) and other libraries built with musl"
 	@echo "note that this requires 'upx' installed (to compress/strip executables)"
 	@touch ./build/build-optimized-static.out
-	@$(eval opts := -autofree -prod -compress -cflags '--static')
+	@$(eval opts := ${COMPILER_OPTIMIZE_FLAGS} -cflags '--static')
 	@v ${opts} -o ./build/vweb-example server.v
 	# @ cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
 	@ls -la ./build
 
-dist: clean-dist
-	@echo "Setup all resources in the folder './dist'..."
-	@echo "To build executables, before run one of 'build*' tasks via make..."
+copy-dist:
+	@echo "Copy all resources in the folder './dist'..."
 	@cp -r ./build/* ./dist
 	@cp -r ./public ./dist # workaround for some resource still to add in binaries ...
 	@ls -la ./dist
+
+compress-dist-executables: dist
+	@echo "Compress executables (not already optimized/compressed), in the folder './dist'..."
+	@echo "note that this requires 'upx' installed (to compress/strip executables)"
+	@touch ./dist/compress-executables.out
+	@upx dist/healthcheck
+	@upx dist/vweb-example
+	@upx dist/vweb-minimal
+	@ls -la ./dist
+
+# dist: clean-dist copy-dist
+dist: clean-dist copy-dist compress-dist-executables
+	@echo "Setup all resources in the folder './dist'..."
+	@echo "To build executables, before run one of 'build*' tasks via make..."
 
 run: run-dist
 	@echo "Run main application..."
@@ -159,15 +176,6 @@ build-and-run: build dist run
 
 build-optimized-and-run: build-optimized dist run
 	@echo "Build and Run main application optimized..."
-
-compress-dist-executables: dist
-	@echo "Compress executables (not already optimized/compressed), in the folder './dist'..."
-	@echo "note that this requires 'upx' installed (to compress/strip executables)"
-	@touch ./dist/compress-executables.out
-	@upx dist/healthcheck
-	@upx dist/vweb-example
-	@upx dist/vweb-minimal
-	@ls -la ./dist
 
 
 # container-related tasks
