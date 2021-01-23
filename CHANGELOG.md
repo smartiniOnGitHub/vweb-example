@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.2.1](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.2.1) (unreleased)
+Summary Changelog:
+- Fix: Update make task to compress files to continue in case of errors 
+  processing one of optional executables 
+
 ## [0.2.0](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.2.0) (2021-01-23)
 Summary Changelog:
 - General: Update requirements to latest V 0.2.2 or later, 
