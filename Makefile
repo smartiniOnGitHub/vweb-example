@@ -142,9 +142,9 @@ compress-dist-executables: dist
 	@echo "Compress executables (not already optimized/compressed), in the folder './dist'..."
 	@echo "note that this requires 'upx' installed (to compress/strip executables)"
 	@touch ./dist/compress-executables.out
-	@upx dist/healthcheck
+	@upx dist/healthcheck || echo "failure in compress/strip healthcheck"
 	@upx dist/vweb-example
-	@upx dist/vweb-minimal
+	@upx dist/vweb-minimal || echo "failure in compress/strip vweb-minimal"
 	@ls -la ./dist
 
 # dist: clean-dist copy-dist
