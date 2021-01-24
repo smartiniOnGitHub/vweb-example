@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 the original author or authors.
+* Copyright 2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+*/
 module main
 
 import log
@@ -26,23 +26,23 @@ import vweb
 // note that at the moment there is no reload of resources when the server is started ... later check if/how to achieve it ...
 
 const (
-	// server          = 'localhost'
-	port            = 8000
-	timeout         = 10000 // msec
-	v_version       = vu.v_version
-	log_level       = log.Level.info // set to .debug for more logging
-	// log_file        = './logs/server.log'
+	// server    = 'localhost'
+	port      = 8000
+	timeout   = 10000 // msec
+	v_version = vu.v_version
+	log_level = log.Level.info // set to .debug for more logging
+	// log_file  = './logs/server.log'
 )
 
 struct App {
-    vweb.Context // using embedded struct
-    port      int // http port
-	timeout   int // shutdown timeout
+	vweb.Context
+	port    int // http port
+	timeout int // shutdown timeout
 mut:
 	log       log.Log = log.Log{} // integrated logging
 	metadata  vmod.Manifest // some metadata; later check if use a Map instead ...
-	cnt_page  int // sample, to count number of page requests
-	cnt_api   int // sample, to count number of api requests
+	cnt_page  int  // sample, to count number of page requests
+	cnt_api   int  // sample, to count number of api requests
 	logged_in bool // sample, tell if user is logged in
 	// user      User
 }
@@ -50,23 +50,23 @@ mut:
 // set application configuration
 fn (mut app App) set_app_config() {
 	// instance and configures logging, etc
-	app.log.set_level(log_level)
+	app.log.set_level(main.log_level)
 	// app.log.set_full_logpath(log_file)
-	app.log.info('Logging level set to ${log_level}')
+	app.log.info('Logging level set to $main.log_level')
 }
 
 // set application metadata from application module
 fn (mut app App) set_app_metadata() {
 	// get metadata from application module at build time and set in in application
-	app.metadata = vmod.decode( @VMOD_FILE ) or {
+	app.metadata = vmod.decode(@VMOD_FILE) or {
 		app.log.fatal('unable to fing V module file')
 		panic(err)
 	}
 	// add some extra data, like: built-with/V version, etc
-	app.metadata.unknown['v-version'] << v_version
+	app.metadata.unknown['v-version'] << main.v_version
 	app.metadata.unknown['framework'] << 'vweb'
 	$if debug {
-		app.log.info('application metadata (from module): ${app.metadata}')
+		app.log.info('application metadata (from module): $app.metadata')
 	}
 }
 
@@ -81,24 +81,25 @@ fn (mut app App) set_app_static_mappings() {
 	app.serve_static('/css/style.css', 'public/css/style.css', 'text/css')
 	// later disable previous mapping for css and check if/how to serve it as a generic static content ...
 	// note that template files now can be in the same folder, or under 'templates/' ...
-	app.serve_static('/img/GitHub-Mark-Light-32px.png', 'public/img/GitHub-Mark-Light-32px.png', 'image/png')
+	app.serve_static('/img/GitHub-Mark-Light-32px.png', 'public/img/GitHub-Mark-Light-32px.png',
+		'image/png')
 }
 
 // entry point og the application
 fn main() {
 	mut app := App{
-		port: port
-		timeout: timeout
+		port: main.port
+		timeout: main.timeout
 	}
 
 	// println("Server listening on 'http://${server}:${port}' ...")
-    // vweb.run<App>(port)
-    vweb.run_app<App>(mut app, port)
+	// vweb.run<App>(port)
+	vweb.run_app<App>(mut app, main.port)
 }
 
 // initialization of webapp
 pub fn (mut app App) init_once() {
-	app.log.info("Application initialization ...")
+	app.log.info('Application initialization ...')
 	// config application
 	app.set_app_config()
 
@@ -109,8 +110,8 @@ pub fn (mut app App) init_once() {
 	app.set_app_static_mappings()
 
 	// initialization done
-	app.log.info('${app.metadata.name}-${app.metadata.version} initialized')
-	app.log.info('vweb appl, built with V ${v_version}') // print V version (set at build time)
+	app.log.info('$app.metadata.name-$app.metadata.version initialized')
+	app.log.info('vweb appl, built with V $main.v_version') // print V version (set at build time)
 }
 
 // initialization just before any route call
@@ -141,7 +142,7 @@ pub fn (mut app App) to_home() vweb.Result {
 pub fn (mut app App) index() vweb.Result {
 	app.cnt_page++ // sample, increment count number of page requests
 	// many variables, like V version (set at build time) are automatically injected into template files
-    return $vweb.html()
+	return $vweb.html()
 }
 
 // sample health check route that exposes a fixed json reply at '/health'
@@ -165,7 +166,7 @@ pub fn (mut app App) ready() vweb.Result {
 
 pub fn (mut app App) headerfooter() vweb.Result {
 	app.cnt_page++
-    return $vweb.html() // sample template page with hardcoded support for header and footer ...
+	return $vweb.html() // sample template page with hardcoded support for header and footer ...
 }
 
 /*
@@ -182,14 +183,14 @@ pub fn (mut app App) includes() vweb.Result {
 // show headers in the reply (as text), and set a sample cookie
 pub fn (mut app App) cookie() vweb.Result {
 	app.cnt_api++
-	app.set_cookie(name:'cookie', value:'test')
+	app.set_cookie(name: 'cookie', value: 'test')
 	return app.text('Headers: $app.headers')
 }
 
 // sample route that exposes a text reply at '/hello'
 pub fn (mut app App) hello() vweb.Result {
 	app.cnt_api++
-	return app.text('Hello world from vweb at ${time.now().format_ss()}')
+	return app.text('Hello world from vweb at $time.now().format_ss()')
 }
 
 // sample route that exposes a json reply at '/hj'
@@ -202,7 +203,7 @@ pub fn (mut app App) hj() vweb.Result {
 pub fn (mut app App) time() vweb.Result {
 	app.cnt_api++
 	now := time.now()
-	return app.json('{"timestamp":"${now.unix_time()}", "time":"$now"}')
+	return app.json('{"timestamp":"$now.unix_time()", "time":"$now"}')
 }
 
 // sample route with a not existent path, that exposes a fixed json reply at '/not/existent'

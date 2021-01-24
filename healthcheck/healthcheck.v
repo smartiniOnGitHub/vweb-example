@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 the original author or authors.
+* Copyright 2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+*/
 module main
 
 import log
@@ -29,7 +29,7 @@ fn main() {
 	}
 	mut log := log.Log{}
 	log.set_level(.info) // default logging level
-	log.info('healthcheck, doing a GET call at: ${url} ...')
+	log.info('healthcheck, doing a GET call at: $url ...')
 
 	resp := http.get(url) or {
 		log.error(err)
@@ -38,8 +38,7 @@ fn main() {
 	log.info(resp.text)
 
 	if resp.status_code != 200 {
-		log.error('healthcheck, got response not ok: ${resp.status_code} ...')
+		log.error('healthcheck, got response not ok: $resp.status_code ...')
 		exit(resp.status_code)
 	}
-
 }
