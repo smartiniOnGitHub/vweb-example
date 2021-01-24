@@ -3,7 +3,9 @@
 ## [0.2.1](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.2.1) (unreleased)
 Summary Changelog:
 - Fix: Update make task to compress files to continue in case of errors 
-  processing one of optional executables 
+  processing one of optional executables
+- Fix: Format sources with V formatter (and some small differences); 
+  some changes has been applied for new module constants usage (since V post 0.2.2 and since 0.2.3)
 
 ## [0.2.0](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.2.0) (2021-01-23)
 Summary Changelog:

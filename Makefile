@@ -79,6 +79,14 @@ fix-build:
 fix-dist:
 	@sudo chown $(USER):$(USER) -R ./dist/*
 
+format-sources-list-only:
+	@echo "List all sources that need to be formatted..."
+	@v fmt -l .
+
+format-sources:
+	@echo "Format all sources..."
+	@v fmt -w .
+
 build: build-normal
 	@echo "Build all sources, in the folder './build'..."
 
