@@ -146,13 +146,13 @@ copy-dist:
 	@cp -r ./public ./dist # workaround for some resource still to add in binaries ...
 	@ls -la ./dist
 
-compress-dist-executables: dist
+compress-dist-executables:
 	@echo "Compress executables (not already optimized/compressed), in the folder './dist'..."
 	@echo "note that this requires 'upx' installed (to compress/strip executables)"
 	@touch ./dist/compress-executables.out
-	@upx dist/healthcheck || echo "failure in compress/strip healthcheck"
-	@upx dist/vweb-example
-	@upx dist/vweb-minimal || echo "failure in compress/strip vweb-minimal"
+	@upx -q dist/healthcheck || echo "failure in compress/strip healthcheck"
+	@upx -q dist/vweb-example
+	@upx -q dist/vweb-minimal || echo "failure in compress/strip vweb-minimal"
 	@ls -la ./dist
 
 # dist: clean-dist copy-dist
