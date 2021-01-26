@@ -31,7 +31,7 @@ struct App {
 
 fn main() {
 	// println("Server listening on 'http://${server}:${port}' ...")
-	vweb.run<App>(main.port)
+	vweb.run<App>(port)
 }
 
 // initialization of webapp
