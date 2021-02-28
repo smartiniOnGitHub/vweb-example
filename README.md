@@ -56,10 +56,10 @@ to simplify deploy.
 
 Just to have an idea, the minimal web server script ('server-minimal.v' -> 'vweb-minimal') 
 when built on a modern Linux distribution (like Ubuntu 20.04 LTS at 64 bit) is:
-- normal build: from 350 KB to 400 KB
-- normal build optimized (for production and compressed): from 25 KB to 50 KB
-- static build (no external libraries): approx. 3.8 MB
-- static build optimized (no external libraries): approx. 1.1 MB
+- normal build: from 140 KB to 240 KB
+- normal build optimized (for production and compressed): from 70 KB to 100 KB
+- static build (no external libraries): approx. 4.5 MB
+- static build optimized (no external libraries): approx. 1.8 MB
 
 all this is impressive.
 

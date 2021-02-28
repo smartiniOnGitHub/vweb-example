@@ -110,7 +110,11 @@ build-optimized: clean-build setup
 
 build-static-ubuntu: clean-build setup
 	@echo "Build all sources not optimized and with libraries statically linked, in the folder './build'..."
-	@echo "note that this requires 'musl-gcc' installed (default in Alpine Linux) and libraries built with musl"
+	@echo "note that this requires 'musl-gcc' installed (default in Alpine Linux, and 'musl-tools' in Ubuntu) and libraries built with musl"
+	@ # In Ubuntu ensure to have installed 'libssl-dev' and ensure at least to have a symbolic link to reference installed headers, like:
+	@ # look at the document in the 'docs./' folder for more details
+	@ # or (better):
+	@ # install manually OpenSSL sources (newer than default distribution source package), and link like in the previous command.
 	@touch ./build/build-static.out
 	@$(eval opts := -cg -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
 	@v ${opts} -o ./build/vweb-example server.v
@@ -322,9 +326,9 @@ bench-simple:
 	@ab -n 100000 -c 8 http://localhost:8000/
 
 valgrind-check-for-memory-leaks-summary:
-	@echo "Check for memory leaks in the 'vweb-example' using 'valgrind' (run it in another terminal)..."
+	@echo "Check for memory leaks in the already running 'vweb-example' using 'valgrind' (run this in another terminal)..."
 	@cd dist && valgrind --log-file="vweb-example-valgrind-summary.log" ./vweb-example
 
 valgrind-check-for-memory-leaks-details:
-	@echo "Check for memory leaks in the 'vweb-example' using 'valgrind' (run it in another terminal)..."
+	@echo "Check for memory leaks in the already running 'vweb-example' using 'valgrind' (run this in another terminal)..."
 	@cd dist && valgrind --leak-check=full --show-leak-kinds=all --log-file="vweb-example-valgrind-details.log" ./vweb-example

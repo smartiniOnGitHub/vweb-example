@@ -60,9 +60,9 @@ Just for test, tried to build OpenSSL with musl, to be able to use as dependency
 Get sources, unzip and fix permissions:
 ```bash
 cd /usr/local/src/
-wget https://github.com/openssl/openssl/archive/OpenSSL_1_1_1g.tar.gz
+wget https://github.com/openssl/openssl/archive/OpenSSL_1_1_1j.tar.gz
 sudo chown $USER:$USER .
-tar -xf OpenSSL_1_1_1g.tar.gz
+tar -xf OpenSSL_1_1_1j.tar.gz
 sudo chown $USER:$USER -R .
 sudo mkdir /usr/local/ssl
 sudo chown $USER:$USER -R /usr/local/ssl/*
@@ -75,9 +75,15 @@ export CC=musl-gcc # set musl-gcc, important here
 (added the flag '-DOPENSSL_NO_SECURE_MEMORY' to avoid a compilation error, as seen in related bug; 
 of course for a real production usage a workaround like that is not acceptable and a better solution must be used).
 Then `make clean` and `make` and (optional) `make test` and then install in the given (secondary) folder 
-with `make install` and finally `ll /usr/local/ssl/lib/`.
+with `make install` and finally `ll /usr/local/ssl/lib/` and `ll /usr/local/ssl/include/openssl/`.
 
 Note that crypto is linked statically in ssl here, so library consumers doesn't need to refer to it.
+
+Last, to use it in builds, set/update symbolic link to point to its headers, for example:
+```bash
+sudo ln -s /usr/local/ssl/include/openssl/ /usr/include/openssl
+```
+if you already have a symbolic link there, maybe rename before deleting and create this new one.
 
 
 ## Build

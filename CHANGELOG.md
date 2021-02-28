@@ -1,7 +1,9 @@
 # Change Log
 
-## [0.2.1](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.2.1) (unreleased)
+## [0.2.1](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.2.1) (2021-02-28)
 Summary Changelog:
+- General: Ensure all works with latest V 0.2.2 (and an important fix for vweb today) 
+- General: Update/clarify static build of executables in Ubuntu
 - Fix: Update make task to compress files to continue in case of errors 
   processing one of optional executables
 - Fix: Format sources with V formatter (and some small differences); 
