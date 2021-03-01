@@ -23,16 +23,13 @@ import net.http
 // to minimize its dimension, ensure to compile with all optimizations (for production) ...
 
 fn main() {
-	mut url := 'http://localhost:8000/health' // default URL for health check
-	if os.args.len > 1 {
-		url = os.args[1]
-	}
+	url := if os.args.len > 1 { os.args[1] } else { 'http://localhost:8000/health' }
 	mut log := log.Log{}
 	log.set_level(.info) // default logging level
 	log.info('healthcheck, doing a GET call at: $url ...')
 
 	resp := http.get(url) or {
-		log.error(err)
+		log.error(err.msg)
 		exit(1)
 	}
 	log.info(resp.text)
