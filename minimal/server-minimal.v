@@ -35,14 +35,14 @@ fn main() {
 }
 
 // initialization of webapp
-pub fn (mut app App) init_once() {
+pub fn (mut app App) init_server() {
 	// app.handle_static('.') // serve static content from current folder
 	// app.handle_static('public') // serve static content from folder './public'
 	// note that template files now can be in the same folder, or under 'templates/' ...
 }
 
 // initialization before any action
-pub fn (mut app App) init() {
+pub fn (mut app App) before_request() {
 }
 
 // serve some content on the root (index) route '/'

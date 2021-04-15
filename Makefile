@@ -159,10 +159,10 @@ compress-dist-executables:
 	@upx -q dist/vweb-minimal || echo "failure in compress/strip vweb-minimal"
 	@ls -la ./dist
 
-# dist: clean-dist copy-dist
-dist: clean-dist copy-dist compress-dist-executables
+dist: clean-dist copy-dist
 	@echo "Setup all resources in the folder './dist'..."
 	@echo "To build executables, before run one of 'build*' tasks via make..."
+	@echo "To compress/strip executables, run 'compress-dist-executables' task via make..."
 
 run: run-dist
 	@echo "Run main application..."
@@ -182,11 +182,16 @@ run-dist:
 	@echo "If not present in that folder, run: 'make dist' and re-run this."
 	@cd ./dist && ./vweb-example && cd ..
 
+run-healthcheck:
+	@echo "Run healthcheck application from already built executables, in the folder './dist'..."
+	@echo "If not present in that folder, run: 'make dist' and re-run this."
+	@cd ./dist && ./healthcheck && cd ..
+
 
 build-and-run: build dist run
 	@echo "Build and Run main application..."
 
-build-optimized-and-run: build-optimized dist run
+build-optimized-and-run: build-optimized dist compress-dist-executables run
 	@echo "Build and Run main application optimized..."
 
 
@@ -201,21 +206,21 @@ build-container:
 build-container-alpine:
 	@$(eval dfile := Dockerfile.alpine)
 	@echo "Build sources and run in a Docker container (alpine based) for run ('${dfile}'), "\
-		"using optimized binaries..."
+		  "using optimized binaries..."
 	@docker build -t $(NAME):$(TAG) -f ./${dfile} .
 	@docker images "$(NAME)*"
 
 build-container-alpine-scratch:
 	@$(eval dfile := Dockerfile.scratch)
 	@echo "Build sources in a Docker container (alpine based) and run in a minimal (scratch based) one, "\
-		"for run ('${dfile}'), using optimized binaries (statically built)..."
+		  "for run ('${dfile}'), using optimized binaries (statically built)..."
 	@docker build -t $(NAME):$(TAG) -f ./${dfile} .
 	@docker images "$(NAME)*"
 
 build-container-ubuntu:
 	@$(eval dfile := Dockerfile.ubuntu)
 	@echo "Build sources and run in a Docker container (ubuntu based) for run ('${dfile}'), "\
-		"using optimized binaries..."
+		  "using optimized binaries..."
 	@docker build -t $(NAME):$(TAG) -f ./${dfile} .
 	@docker images "$(NAME)*"
 
@@ -226,7 +231,7 @@ build-container-for-run-ubuntu:
 	@$(eval dfile := Dockerfile.run.ubuntu)
 	@echo "Build Docker container (ubuntu based) for run ('${dfile}'), using optimized binaries..."
 	@echo "If files aren't present in the folder './dist': "\
-		"run one of make build* tasks, then 'make dist' and re-run this."
+		  "run one of make build* tasks, then 'make dist' and re-run this."
 	@cd ./dist && cp ../${dfile} . \
 		&& docker build -t $(NAME):$(TAG) -f ./${dfile} . \
 		&& cd ..
@@ -235,9 +240,9 @@ build-container-for-run-ubuntu:
 build-container-for-run-scratch:
 	@$(eval dfile := Dockerfile.run.scratch)
 	@echo "Build Docker container (based on scratch, so minimal) for run ('${dfile}'), "\
-		"using optimized binaries (statically built)..."
+		  "using optimized binaries (statically built)..."
 	@echo "If files aren't present in the folder './dist': "\
-		"run one of make build*-static tasks, then 'make dist' and re-run this."
+		  "run one of make build*-static tasks, then 'make dist' and re-run this."
 	@cd ./dist && cp ../${dfile} . \
 		&& docker build -t $(NAME):$(TAG) -f ./${dfile} . \
 		&& cd ..

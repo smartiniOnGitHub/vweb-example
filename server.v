@@ -98,7 +98,7 @@ fn main() {
 }
 
 // initialization of webapp
-pub fn (mut app App) init_once() {
+pub fn (mut app App) init_server() {
 	app.log.info('Application initialization ...')
 	// config application
 	app.set_app_config()
@@ -115,7 +115,7 @@ pub fn (mut app App) init_once() {
 }
 
 // initialization just before any route call
-pub fn (mut app App) init() {
+pub fn (mut app App) before_request() {
 	// url := app.req.url
 	// app.log.debug('${@FN}: url=$url')
 	app.log.debug('${@FN}: requested total pages: $app.cnt_page, total api: $app.cnt_api')
@@ -169,15 +169,12 @@ pub fn (mut app App) headerfooter() vweb.Result {
 	return $vweb.html() // sample template page with hardcoded support for header and footer ...
 }
 
-/*
-// TODO: enable when include in templates will be fully working ... wip
 // serve a template with nested includes on the route '/includes'
 // note that this requires template page 'index.html', or compile will fail ...
 pub fn (mut app App) includes() vweb.Result {
 	app.cnt_page++
     return $vweb.html() // sample template page with includes ...
 }
- */
 
 // sample route that exposes a text reply at '/cookie'
 // show headers in the reply (as text), and set a sample cookie
