@@ -1,5 +1,19 @@
 # Change Log
 
+## [0.2.2](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.2.2) (unreleased)
+Summary Changelog:
+- General: Ensure all works with latest V 0.2.x post 0.2.2 
+  (and important fixes/improvements for vweb, since previous release)
+- General: update 'healthcheck' to the new Error management
+- General: update 'time.sleep' calls to use the new syntax (safer/cleaner)
+- General: update code to latest vweb changes: 
+  rename of some app method, update '@include' directive 
+  instead of the deprecated '@header' and '@footer', etc)
+- General: fix the server to return even images
+  (due to some limitations, currently mapped URLs must be all in lowercase)
+- General: some small improvements/tweaks in pages/templates and code
+
+
 ## [0.2.1](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.2.1) (2021-02-28)
 Summary Changelog:
 - General: Ensure all works with latest V 0.2.2 (and an important fix for vweb today) 

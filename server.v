@@ -16,6 +16,7 @@
 module main
 
 import log
+// import os
 import time
 import v.util as vu
 import v.vmod
@@ -28,7 +29,7 @@ import vweb
 const (
 	// server    = 'localhost'
 	port      = 8000
-	timeout   = 10000 // msec
+	timeout   = 10 * time.second // msec
 	v_version = vu.v_version
 	log_level = log.Level.info // set to .debug for more logging
 		// log_file  = './logs/server.log'
@@ -37,7 +38,7 @@ const (
 struct App {
 	vweb.Context
 	port    int // http port
-	timeout int // shutdown timeout
+	timeout i64 // shutdown timeout
 mut:
 	log       log.Log = log.Log{} // integrated logging
 	metadata  vmod.Manifest // some metadata; later check if use a Map instead ...
@@ -72,20 +73,18 @@ fn (mut app App) set_app_metadata() {
 
 // set application mappings for static content(assets, etc)
 fn (mut app App) set_app_static_mappings() {
+	// map some static content
+	// currently related URLs must be set in lowercase
 	app.serve_static('/favicon.ico', 'public/img/favicon.ico', 'image/x-icon')
-	// publish static content from a specific folder
-	// app.handle_static('.') // serve static content from current folder
-	// app.handle_static('public') // serve static content from folder './public'
-	// but note that it doesn't work with templates ...
-	// so add an explicit reference to css ...
 	app.serve_static('/css/style.css', 'public/css/style.css', 'text/css')
+	app.serve_static('/img/github-logo.png', 'public/img/GitHub-Mark-Light-32px.png', 'image/png')
+	// publish static content from a specific folder
+	// app.mount_static_folder_at(os.resource_abs_path('./public/img'), '/img')
 	// later disable previous mapping for css and check if/how to serve it as a generic static content ...
 	// note that template files now can be in the same folder, or under 'templates/' ...
-	app.serve_static('/img/GitHub-Mark-Light-32px.png', 'public/img/GitHub-Mark-Light-32px.png',
-		'image/png')
 }
 
-// entry point og the application
+// entry point of the application
 fn main() {
 	mut app := App{
 		port: port
@@ -158,7 +157,7 @@ pub fn (mut app App) health() vweb.Result {
 pub fn (mut app App) ready() vweb.Result {
 	app.cnt_api++
 	// wait for some seconds here, to simulate a real dependencies check (and a slow reply) ...
-	time.sleep(5) // wait for 5 seconds
+	time.sleep(5 * time.second) // wait for 5 seconds
 	return app.json('{"statusCode":200, "status":"ok", 
 		"msg":"Dependencies ok, ready to accept incoming traffic now"}
 	')
