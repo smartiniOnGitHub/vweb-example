@@ -29,7 +29,7 @@ import vweb
 const (
 	// server    = 'localhost'
 	port      = 8000
-	timeout   = 10 * time.second // msec
+	timeout   = 10 * time.second // default is in msec (if not multiplied)
 	v_version = vu.v_version
 	log_level = log.Level.info // set to .debug for more logging
 		// log_file  = './logs/server.log'
