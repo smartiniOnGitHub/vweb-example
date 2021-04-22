@@ -12,6 +12,7 @@ Summary Changelog:
 - General: fix the server to return even images
   (due to some limitations, currently mapped URLs must be all in lowercase)
 - General: some small improvements/tweaks in pages/templates and code
+- General: update source docs to be aligned with vdoc
 
 
 ## [0.2.1](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.2.1) (2021-02-28)

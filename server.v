@@ -48,7 +48,7 @@ mut:
 	// user      User
 }
 
-// set application configuration
+// set_app_config set application configuration
 fn (mut app App) set_app_config() {
 	// instance and configures logging, etc
 	app.log.set_level(log_level)
@@ -56,7 +56,7 @@ fn (mut app App) set_app_config() {
 	app.log.info('Logging level set to $log_level')
 }
 
-// set application metadata from application module
+// set_app_metadata set application metadata from application module
 fn (mut app App) set_app_metadata() {
 	// get metadata from application module at build time and set in in application
 	app.metadata = vmod.decode(@VMOD_FILE) or {
@@ -71,7 +71,7 @@ fn (mut app App) set_app_metadata() {
 	}
 }
 
-// set application mappings for static content(assets, etc)
+// set_app_static_mappings set application mappings for static content(assets, etc)
 fn (mut app App) set_app_static_mappings() {
 	// map some static content
 	// currently related URLs must be set in lowercase
@@ -84,7 +84,7 @@ fn (mut app App) set_app_static_mappings() {
 	// note that template files now can be in the same folder, or under 'templates/' ...
 }
 
-// entry point of the application
+// main entry point of the application
 fn main() {
 	mut app := App{
 		port: port
@@ -96,7 +96,7 @@ fn main() {
 	vweb.run_app<App>(mut app, port)
 }
 
-// initialization of webapp
+// init_server initialization of webapp
 pub fn (mut app App) init_server() {
 	app.log.info('Application initialization ...')
 	// config application
@@ -113,7 +113,7 @@ pub fn (mut app App) init_server() {
 	app.log.info('vweb appl, built with V $v_version') // print V version (set at build time)
 }
 
-// initialization just before any route call
+// before_request initialization just before any route call
 pub fn (mut app App) before_request() {
 	// url := app.req.url
 	// app.log.debug('${@FN}: url=$url')
@@ -122,7 +122,7 @@ pub fn (mut app App) before_request() {
 }
 
 /*
-// logic for graceful shutdown of the webapp
+// graceful_exit logic for graceful shutdown of the webapp
 // future use
 fn (mut app App) graceful_exit() {
 	app.log.info("Application shutdown in $app.timeout msec ...")
@@ -131,12 +131,12 @@ fn (mut app App) graceful_exit() {
 }
  */
 
-// redirect to home page
+// to_home redirect to home page
 pub fn (mut app App) to_home() vweb.Result {
 	return app.redirect('/')
 }
 
-// serve some content on the root (index) route '/'
+// index serve some content on the root (index) route '/'
 // note that this requires template page 'index.html', or compile will fail ...
 pub fn (mut app App) index() vweb.Result {
 	app.cnt_page++ // sample, increment count number of page requests
@@ -144,7 +144,7 @@ pub fn (mut app App) index() vweb.Result {
 	return $vweb.html()
 }
 
-// sample health check route that exposes a fixed json reply at '/health'
+// health sample health check route that exposes a fixed json reply at '/health'
 pub fn (mut app App) health() vweb.Result {
 	app.cnt_api++ // sample, increment count number of api requests
 	return app.json('{"statusCode":200, "status":"ok"}')
@@ -153,7 +153,7 @@ pub fn (mut app App) health() vweb.Result {
 	// return vweb.Result{}
 }
 
-// sample readiness route that exposes a fixed json reply at '/ready'
+// ready sample readiness route that exposes a fixed json reply at '/ready'
 pub fn (mut app App) ready() vweb.Result {
 	app.cnt_api++
 	// wait for some seconds here, to simulate a real dependencies check (and a slow reply) ...
@@ -163,19 +163,20 @@ pub fn (mut app App) ready() vweb.Result {
 	')
 }
 
+// headerfooter sample route to serve a template page with includes
 pub fn (mut app App) headerfooter() vweb.Result {
 	app.cnt_page++
 	return $vweb.html() // sample template page with hardcoded support for header and footer ...
 }
 
-// serve a template with nested includes on the route '/includes'
+// includes serve a template with nested includes on the route '/includes'
 // note that this requires template page 'index.html', or compile will fail ...
 pub fn (mut app App) includes() vweb.Result {
 	app.cnt_page++
     return $vweb.html() // sample template page with includes ...
 }
 
-// sample route that exposes a text reply at '/cookie'
+// cookie sample route that exposes a text reply at '/cookie'
 // show headers in the reply (as text), and set a sample cookie
 pub fn (mut app App) cookie() vweb.Result {
 	app.cnt_api++
@@ -183,33 +184,33 @@ pub fn (mut app App) cookie() vweb.Result {
 	return app.text('Headers: $app.headers')
 }
 
-// sample route that exposes a text reply at '/hello'
+// hello sample route that exposes a text reply at '/hello'
 pub fn (mut app App) hello() vweb.Result {
 	app.cnt_api++
 	return app.text('Hello world from vweb at $time.now().format_ss()')
 }
 
-// sample route that exposes a json reply at '/hj'
+// hj sample route that exposes a json reply at '/hj'
 pub fn (mut app App) hj() vweb.Result {
 	app.cnt_api++
 	return app.json('{"Hello":"World"}')
 }
 
-// sample route that exposes a json reply at '/time'
+// time sample route that exposes a json reply at '/time'
 pub fn (mut app App) time() vweb.Result {
 	app.cnt_api++
 	now := time.now()
 	return app.json('{"timestamp":"$now.unix_time()", "time":"$now"}')
 }
 
-// sample route with a not existent path, that exposes a fixed json reply at '/not/existent'
+// not_existent sample route with a not existent path, that exposes a fixed json reply at '/not/existent'
 // expected an HTTP error 404 (not found)
 pub fn (mut app App) not_existent() vweb.Result {
 	app.cnt_api++
 	return app.json('{"msg":"Should not see this reply"}')
 }
 
-// sample route with nested path, that exposes a fixed json reply at '/user/:id' and '/user/:id/info'
+// user_info sample route with nested path, that exposes a fixed json reply at '/user/:id' and '/user/:id/info'
 // ['/user/:id'] // commented to avoid compiler warning on method arguments mismatch ...
 ['/user/:id/info']
 pub fn (mut app App) user_info(user string) vweb.Result {
@@ -217,7 +218,7 @@ pub fn (mut app App) user_info(user string) vweb.Result {
 	return app.json('{"msg":"Hi, it\'s me (user: $user)"}')
 }
 
-// sample route with an application selected HTTP status code, that exposes a fixed json reply at '/mystatus'
+// mystatus sample route with an application selected HTTP status code, that exposes a fixed json reply at '/mystatus'
 // (the given code must be a valid code, in the range 100..599)
 pub fn (mut app App) mystatus() vweb.Result {
 	app.cnt_api++
@@ -225,7 +226,7 @@ pub fn (mut app App) mystatus() vweb.Result {
 	return app.json('{"msg":"My HTTP status code and message"}')
 }
 
-// sample route with application info (metadata), with a reply at '/info'
+// app_info sample route with application info (metadata), with a reply at '/info'
 ['/info']
 pub fn (mut app App) app_info() vweb.Result {
 	app.cnt_api++
