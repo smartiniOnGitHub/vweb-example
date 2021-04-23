@@ -330,6 +330,10 @@ bench-simple:
 	@echo "Simple benchmark using 'ab' (run it in another terminal)..."
 	@ab -n 100000 -c 8 http://localhost:8000/
 
+exit-status:
+	# print exit status of previous command...
+	@echo $?
+
 valgrind-check-for-memory-leaks-summary:
 	@echo "Check for memory leaks in the already running 'vweb-example' using 'valgrind' (run this in another terminal)..."
 	@cd dist && valgrind --log-file="vweb-example-valgrind-summary.log" ./vweb-example
