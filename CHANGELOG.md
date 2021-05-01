@@ -10,7 +10,6 @@ Summary Changelog:
   rename of some app method, update '@include' directive 
   instead of the deprecated '@header' and '@footer', etc)
 - General: fix the server to return even images
-  (due to some limitations, currently mapped URLs must be all in lowercase)
 - General: some small improvements/tweaks in pages/templates and code
 - General: update source docs to be aligned with vdoc
 

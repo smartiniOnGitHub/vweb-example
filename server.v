@@ -74,10 +74,10 @@ fn (mut app App) set_app_metadata() {
 // set_app_static_mappings set application mappings for static content(assets, etc)
 fn (mut app App) set_app_static_mappings() {
 	// map some static content
-	// currently related URLs must be set in lowercase
+	// currently related URLs must be set in lowercase ... no more now
 	app.serve_static('/favicon.ico', 'public/img/favicon.ico', 'image/x-icon')
 	app.serve_static('/css/style.css', 'public/css/style.css', 'text/css')
-	app.serve_static('/img/github-logo.png', 'public/img/GitHub-Mark-Light-32px.png', 'image/png')
+	app.serve_static('/img/GitHub-logo.png', 'public/img/GitHub-Mark-Light-32px.png', 'image/png')
 	// publish static content from a specific folder
 	// app.mount_static_folder_at(os.resource_abs_path('./public/img'), '/img')
 	// later disable previous mapping for css and check if/how to serve it as a generic static content ...
