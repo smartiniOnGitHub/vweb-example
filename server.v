@@ -32,20 +32,21 @@ const (
 	timeout   = 10 * time.second // default is in msec (if not multiplied)
 	v_version = vu.v_version
 	log_level = log.Level.info // set to .debug for more logging
-		// log_file  = './logs/server.log'
+	// log_file  = './logs/server.log'
 )
 
 struct App {
 	vweb.Context
-	port    int // http port
-	timeout i64 // shutdown timeout
+	port       int // http port
+	timeout    i64 // shutdown timeout
+	started_at u64 // start timestamp
 mut:
-	log       log.Log = log.Log{} // integrated logging
-	metadata  vmod.Manifest // some metadata; later check if use a Map instead ...
-	cnt_page  int  // sample, to count number of page requests
-	cnt_api   int  // sample, to count number of api requests
-	logged_in bool // sample, tell if user is logged in
-	// user      User
+	log        log.Log // integrated logging
+	metadata   vmod.Manifest // some metadata; later check if use a Map instead ...
+	cnt_page   int  // sample, to count number of page requests
+	cnt_api    int  // sample, to count number of api requests
+	logged_in  bool // sample, tell if user is logged in
+	// user       User
 }
 
 // set_app_config set application configuration
@@ -86,18 +87,17 @@ fn (mut app App) set_app_static_mappings() {
 
 // main entry point of the application
 fn main() {
-	app := App{
-		port: port
-		timeout: timeout
-	}
-
 	// println("Server listening on 'http://${server}:${port}' ...")
-	// vweb.run(&App{}, port)
-	vweb.run(&app, port)
+	vweb.run(&App{
+		port: port
+		timeout: timeout,
+		started_at: time.now().unix
+	}, port)
 }
 
 // init_server initialization of webapp
 pub fn (mut app App) init_server() {
+	println("Server initialization...") // temp
 	app.log.info('Application initialization ...')
 	// config application
 	app.set_app_config()
