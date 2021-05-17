@@ -74,7 +74,7 @@ fn (mut app App) set_app_metadata() {
 // set_app_static_mappings set application mappings for static content(assets, etc)
 fn (mut app App) set_app_static_mappings() {
 	// map some static content
-	// currently related URLs must be set in lowercase ... no more now
+	// app.handle_static('.', false) // serve static content from current folder
 	app.serve_static('/favicon.ico', 'public/img/favicon.ico', 'image/x-icon')
 	app.serve_static('/css/style.css', 'public/css/style.css', 'text/css')
 	app.serve_static('/img/GitHub-logo.png', 'public/img/GitHub-Mark-Light-32px.png', 'image/png')
@@ -86,14 +86,14 @@ fn (mut app App) set_app_static_mappings() {
 
 // main entry point of the application
 fn main() {
-	mut app := App{
+	app := App{
 		port: port
 		timeout: timeout
 	}
 
 	// println("Server listening on 'http://${server}:${port}' ...")
-	// vweb.run<App>(port)
-	vweb.run_app<App>(mut app, port)
+	// vweb.run(&App{}, port)
+	vweb.run(&app, port)
 }
 
 // init_server initialization of webapp
@@ -231,4 +231,11 @@ pub fn (mut app App) mystatus() vweb.Result {
 pub fn (mut app App) app_info() vweb.Result {
 	app.cnt_api++
 	return app.text(app.metadata.str())
+}
+
+// post sample route to dump the given data (via HTTP POST)
+[post]
+pub fn (mut app App) post_dump() vweb.Result {
+	app.cnt_api++
+	return app.text('Post body: $app.req.data')
 }
