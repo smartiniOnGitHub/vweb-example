@@ -29,23 +29,29 @@ struct App {
 	vweb.Context
 }
 
+// main entry point of the application
 fn main() {
 	// println("Server listening on 'http://${server}:${port}' ...")
-	vweb.run(&App{}, port)
+	vweb.run(new_app(), port)
 }
 
-// initialization of webapp
-pub fn (mut app App) init_server() {
+// new_app creates and returns a new app instance
+fn new_app() &App {
+	mut app := &App{}
+
+	// additional app instance startup only configuration
 	// app.handle_static('.', false) // serve static content from current folder
 	// app.handle_static('public', false) // serve static content from folder './public'
 	// note that template files now can be in the same folder, or under 'templates/' ...
+
+	return app
 }
 
-// initialization before any action
+// before_request initialization just before any route call
 pub fn (mut app App) before_request() {
 }
 
-// serve some content on the root (index) route '/'
+// index serve some content on the root (index) route '/'
 // note that this implementation doesn't requires a template page ...
 pub fn (mut app App) index() vweb.Result {
 	return app.json('{"hello": "world"}')
