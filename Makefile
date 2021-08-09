@@ -93,9 +93,9 @@ build: build-normal
 build-normal: clean-build setup
 	@echo "Build all sources not optimized, in the folder './build'..."
 	@touch ./build/build-normal.out
-	@v -o ./build/vweb-example server.v
-	@cd minimal && v -o ../build/vweb-minimal server-minimal.v
-	@cd healthcheck && v -o ../build/healthcheck healthcheck.v
+	@v -g -o ./build/vweb-example server.v
+	@cd minimal && v -g -o ../build/vweb-minimal server-minimal.v
+	@cd healthcheck && v -g -o ../build/healthcheck healthcheck.v
 	@ls -la ./build
 
 build-optimized: clean-build setup
