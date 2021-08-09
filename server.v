@@ -32,7 +32,6 @@ const (
 	timeout   = 10 * time.second // default is in msec (if not multiplied)
 	v_version = vuv.v_version
 	// v_version = vuv.full_v_version(false)
-	log_level = log.Level.info // set to .debug for more logging
 	// log_file  = './logs/server.log'
 )
 
@@ -42,9 +41,10 @@ struct App {
 	timeout    i64 // shutdown timeout
 	started_at u64 // start timestamp
 mut:
-	state    shared State  // app shared state
-	log      log.Log       // integrated logging
-	metadata vmod.Manifest // some metadata; later check if use a Map instead ...
+	state     shared State  // app shared state
+	log       log.Log       // integrated logging
+	log_level log.Level     // logging level
+	metadata  vmod.Manifest // some metadata; later check if use a Map instead ...
 pub mut:
 	// db        sqlite.DB
 	logged_in bool // sample, tell if user is logged in
@@ -61,16 +61,22 @@ mut:
 // set_app_config set application configuration
 fn (mut app App) set_app_config() {
 	// instance and configures logging, etc
-	app.log.set_level(log_level)
+$if debug {
+	app.log_level = log.Level.debug
+} $else {
+	app.log_level = log.Level.info
+}
+	app.log.set_level(app.log_level)
+	println('Logging level set to ${app.log_level}')
+
 	// app.log.set_full_logpath(log_file)
-	app.log.info('Logging level set to $log_level')
 }
 
 // set_app_metadata set application metadata from application module
 fn (mut app App) set_app_metadata() {
 	// get metadata from application module at build time and set in in application
 	app.metadata = vmod.decode(@VMOD_FILE) or {
-		app.log.fatal('unable to fing V module file')
+		app.log.fatal('unable to read V module file')
 		panic(err)
 	}
 	// add some extra data, like: built-with/V version, etc
@@ -109,10 +115,10 @@ fn new_app() &App {
 	}
 
 	// additional app instance startup only configuration
-	println('Server initialization...') // temp
-	app.log.info('Application initialization ...')
+	println('Server initialization at ${app.started_at}...')
 	// config application
 	app.set_app_config()
+	app.log.info('Application initialization ...') // after set logger level
 
 	// set application metadata
 	app.set_app_metadata()
@@ -131,8 +137,13 @@ fn new_app() &App {
 pub fn (mut app App) before_request() {
 	// url := app.req.url
 	// app.log.debug('${@FN}: url=$url')
-	rlock app.state {
-		app.log.debug('${@FN}: requested total pages: $app.state.cnt_page, total api: $app.state.cnt_api')
+	// app.log.debug('debug test') // temp
+	$if debug { // temporary workaround to logger not writing output in debug here ...
+		rlock app.state {
+			msg := '${@FN}: requested total pages: $app.state.cnt_page, total api: $app.state.cnt_api'
+			println(msg) // temp
+			// app.log.debug(msg)
+		}
 	}
 	// app.logged_in = app.logged_in()
 	app.user_id = app.get_cookie('id') or { '0' }
