@@ -8,10 +8,14 @@ Summary Changelog:
 - General: update 'time.sleep' calls to use the new syntax (safer/cleaner)
 - General: update code to latest vweb changes: 
   rename of some app method, update '@include' directive 
-  instead of the deprecated '@header' and '@footer', etc)
+  instead of the deprecated '@header' and '@footer', etc), 
+  ensure global counters (using shared variables) works, 
+  ensure all works in multi-thread (vweb default behavior now)
 - General: fix the server to return even images
 - General: some small improvements/tweaks in pages/templates and code
 - General: update source docs to be aligned with vdoc
+- General: in optimized (production) builds, do not enable autofree, 
+  but do it later (still there are runtime problems with it)
 
 
 ## [0.2.1](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.2.1) (2021-02-28)

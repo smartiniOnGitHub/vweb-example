@@ -87,6 +87,9 @@ format-sources:
 	@echo "Format all sources..."
 	@v fmt -w .
 
+format: format-sources
+	@echo "Format all sources..."
+
 build: build-normal
 	@echo "Build all sources, in the folder './build'..."
 
