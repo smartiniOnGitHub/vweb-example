@@ -41,10 +41,9 @@ struct App {
 	timeout    i64 // shutdown timeout
 	started_at u64 // start timestamp
 mut:
-	state     shared State  // app shared state
-	log       log.Log       // integrated logging
-	log_level log.Level     // logging level
-	metadata  vmod.Manifest // some metadata; later check if use a Map instead ...
+	state     shared State // app shared state
+	log       log.Log      // integrated logging
+	log_level log.Level    // logging level
 pub mut:
 	// db        sqlite.DB
 	logged_in bool // sample, tell if user is logged in
@@ -56,18 +55,19 @@ struct State {
 mut:
 	cnt_page int // sample, to count total number of page requests
 	cnt_api  int // sample, to count total number of api requests
+	metadata map[string]string // some metadata
 }
 
 // set_app_config set application configuration
 fn (mut app App) set_app_config() {
 	// instance and configures logging, etc
-$if debug {
-	app.log_level = log.Level.debug
-} $else {
-	app.log_level = log.Level.info
-}
+	$if debug {
+		app.log_level = log.Level.debug
+	} $else {
+		app.log_level = log.Level.info
+	}
 	app.log.set_level(app.log_level)
-	println('Logging level set to ${app.log_level}')
+	println('Logging level set to $app.log_level')
 
 	// app.log.set_full_logpath(log_file)
 }
@@ -75,15 +75,26 @@ $if debug {
 // set_app_metadata set application metadata from application module
 fn (mut app App) set_app_metadata() {
 	// get metadata from application module at build time and set in in application
-	app.metadata = vmod.decode(@VMOD_FILE) or {
+	// or terminate execution
+	manifest := vmod.decode(@VMOD_FILE) or {
 		app.log.fatal('unable to read V module file')
 		panic(err)
 	}
-	// add some extra data, like: built-with/V version, etc
-	app.metadata.unknown['v-version'] << v_version
-	app.metadata.unknown['framework'] << 'vweb'
+	lock app.state {
+		app.state.metadata = {
+			// add some data from the manifest
+			'name':        manifest.name
+			'version':     manifest.version
+			'description': manifest.description
+			// add some extra data, like: built-with/V version, etc
+			'v-version':   v_version
+			'framework':   'vweb'
+		}
+	}
 	$if debug {
-		app.log.info('application metadata (from module): $app.metadata')
+		rlock app.state {
+			app.log.info('application metadata (from module): $app.state.metadata')
+		}
 	}
 }
 
@@ -127,7 +138,9 @@ fn new_app() &App {
 	app.set_app_static_mappings()
 
 	// initialization done
-	app.log.info('$app.metadata.name-$app.metadata.version initialized')
+	rlock app.state {
+		app.log.info('${app.state.metadata['name']}-${app.state.metadata['version']} initialized')
+	}
 	app.log.info('vweb appl, built with V $v_version') // print V version (set at build time)
 
 	return app
@@ -149,6 +162,34 @@ pub fn (mut app App) before_request() {
 	app.user_id = app.get_cookie('id') or { '0' }
 }
 
+pub fn (mut app App) inc_cnt_page() int {
+	mut data := lock app.state {
+		app.state.cnt_page++
+	}
+	return data
+}
+
+pub fn (mut app App) inc_cnt_api() int {
+	mut data := lock app.state {
+		app.state.cnt_api++
+	}
+	return data
+}
+
+pub fn (mut app App) app_name() string {
+	mut data := rlock app.state {
+		app.state.metadata['name']
+	}
+	return data
+}
+
+pub fn (mut app App) app_version() string {
+	mut data := rlock app.state {
+		app.state.metadata['version']
+	}
+	return data
+}
+
 /*
 // graceful_exit logic for graceful shutdown of the webapp
 // future use
@@ -167,18 +208,14 @@ pub fn (mut app App) to_home() vweb.Result {
 // index serve some content on the root (index) route '/'
 // note that this requires template page 'index.html', or compile will fail ...
 pub fn (mut app App) index() vweb.Result {
-	lock app.state {
-		app.state.cnt_page++ // sample, increment count number of page requests
-	}
+	app.inc_cnt_page() // sample, increment count number of page requests
 	// many variables, like V version (set at build time) are automatically injected into template files
 	return $vweb.html()
 }
 
 // health sample health check route that exposes a fixed json reply at '/health'
 pub fn (mut app App) health() vweb.Result {
-	lock app.state {
-		app.state.cnt_api++ // sample, increment count number of api requests
-	}
+	app.inc_cnt_api() // sample, increment count number of api requests
 	return app.json('{"statusCode":200, "status":"ok"}')
 	// same as:
 	// app.json('{"statusCode":200, "status":"ok"}')
@@ -187,9 +224,7 @@ pub fn (mut app App) health() vweb.Result {
 
 // ready sample readiness route that exposes a fixed json reply at '/ready'
 pub fn (mut app App) ready() vweb.Result {
-	lock app.state {
-		app.state.cnt_api++
-	}
+	app.inc_cnt_api()
 	// wait for some seconds here, to simulate a real dependencies check (and a slow reply) ...
 	time.sleep(5 * time.second) // wait for 5 seconds
 	return app.json('{"statusCode":200, "status":"ok", 
@@ -199,52 +234,40 @@ pub fn (mut app App) ready() vweb.Result {
 
 // headerfooter sample route to serve a template page with includes
 pub fn (mut app App) headerfooter() vweb.Result {
-	lock app.state {
-		app.state.cnt_page++
-	}
+	app.inc_cnt_page()
 	return $vweb.html() // sample template page with hardcoded support for header and footer ...
 }
 
 // includes serve a template with nested includes on the route '/includes'
 // note that this requires template page 'index.html', or compile will fail ...
 pub fn (mut app App) includes() vweb.Result {
-	lock app.state {
-		app.state.cnt_page++
-	}
+	app.inc_cnt_page()
 	return $vweb.html() // sample template page with includes ...
 }
 
 // cookie sample route that exposes a text reply at '/cookie'
 // show headers in the reply (as text), and set a sample cookie
 pub fn (mut app App) cookie() vweb.Result {
-	lock app.state {
-		app.state.cnt_api++
-	}
+	app.inc_cnt_api()
 	app.set_cookie(name: 'cookie', value: 'test')
 	return app.text('Headers: TODO') // $app.headers')
 }
 
 // hello sample route that exposes a text reply at '/hello'
 pub fn (mut app App) hello() vweb.Result {
-	lock app.state {
-		app.state.cnt_api++
-	}
+	app.inc_cnt_api()
 	return app.text('Hello world from vweb at $time.now().format_ss()')
 }
 
 // hj sample route that exposes a json reply at '/hj'
 pub fn (mut app App) hj() vweb.Result {
-	lock app.state {
-		app.state.cnt_api++
-	}
+	app.inc_cnt_api()
 	return app.json('{"Hello":"World"}')
 }
 
 // time sample route that exposes a json reply at '/time'
 pub fn (mut app App) time() vweb.Result {
-	lock app.state {
-		app.state.cnt_api++
-	}
+	app.inc_cnt_api()
 	now := time.now()
 	return app.json('{"timestamp":"$now.unix_time()", "time":"$now"}')
 }
@@ -252,9 +275,7 @@ pub fn (mut app App) time() vweb.Result {
 // not_existent sample route with a not existent path, that exposes a fixed json reply at '/not/existent'
 // expected an HTTP error 404 (not found)
 pub fn (mut app App) not_existent() vweb.Result {
-	lock app.state {
-		app.state.cnt_api++
-	}
+	app.inc_cnt_api()
 	return app.json('{"msg":"Should not see this reply"}')
 }
 
@@ -262,18 +283,14 @@ pub fn (mut app App) not_existent() vweb.Result {
 // ['/user/:id'] // commented to avoid compiler warning on method arguments mismatch ...
 ['/user/:id/info']
 pub fn (mut app App) user_info(user string) vweb.Result {
-	lock app.state {
-		app.state.cnt_api++
-	}
+	app.inc_cnt_api()
 	return app.json('{"msg":"Hi, it\'s me (user: $user)"}')
 }
 
 // mystatus sample route with an application selected HTTP status code, that exposes a fixed json reply at '/mystatus'
 // (the given code must be a valid code, in the range 100..599)
 pub fn (mut app App) mystatus() vweb.Result {
-	lock app.state {
-		app.state.cnt_api++
-	}
+	app.inc_cnt_api()
 	app.set_status(406, 'My error description') // 406 Not Acceptable, as a sample I change here its description in the reply
 	return app.json('{"msg":"My HTTP status code and message"}')
 }
@@ -281,17 +298,21 @@ pub fn (mut app App) mystatus() vweb.Result {
 // app_info sample route with application info (metadata), with a reply at '/info'
 ['/info']
 pub fn (mut app App) app_info() vweb.Result {
-	lock app.state {
-		app.state.cnt_api++
+	app.inc_cnt_api()
+	// return app.text(app.metadata.str())
+	mut metadata := ''
+	rlock app.state {
+		// println('$app.state.metadata') // temp
+		// check later how to have this work ...
+		// app.log.debug('${app.state.metadata['name']}-${app.state.metadata['version']} initialized')
+		metadata = '$app.state.metadata'
 	}
-	return app.text(app.metadata.str())
+	return app.text(metadata)
 }
 
 // post sample route to dump the given data (via HTTP POST)
 [post]
 pub fn (mut app App) post_dump() vweb.Result {
-	lock app.state {
-		app.state.cnt_api++
-	}
+	app.inc_cnt_api()
 	return app.text('Post body: $app.req.data')
 }
