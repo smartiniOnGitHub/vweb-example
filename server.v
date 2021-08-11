@@ -42,8 +42,6 @@ struct App {
 	started_at u64 // start timestamp
 mut:
 	state     shared State // app shared state
-	log       log.Log      // integrated logging
-	log_level log.Level    // logging level
 pub mut:
 	// db        sqlite.DB
 	logged_in bool // sample, tell if user is logged in
@@ -53,21 +51,25 @@ pub mut:
 
 struct State {
 mut:
-	cnt_page int // sample, to count total number of page requests
-	cnt_api  int // sample, to count total number of api requests
-	metadata map[string]string // some metadata
+	cnt_page  int // sample, to count total number of page requests
+	cnt_api   int // sample, to count total number of api requests
+	metadata  map[string]string // some metadata
+	log       log.Log // integrated logging
+	log_level log.Level // logging level
 }
 
 // set_app_config set application configuration
 fn (mut app App) set_app_config() {
 	// instance and configures logging: minimum logging level, etc
-	$if debug {
-		app.log_level = log.Level.debug
-	} $else {
-		app.log_level = log.Level.info
+	lock app.state {
+		$if debug {
+			app.state.log_level = log.Level.debug
+		} $else {
+			app.state.log_level = log.Level.info
+		}
+		app.state.log.set_level(app.state.log_level)
+		println('Logging level set to $app.state.log_level')
 	}
-	app.log.set_level(app.log_level)
-	println('Logging level set to $app.log_level')
 
 	// app.log.set_full_logpath(log_file)
 }
@@ -77,7 +79,9 @@ fn (mut app App) set_app_metadata() {
 	// get metadata from application module at build time and set in in application
 	// or terminate execution
 	manifest := vmod.decode(@VMOD_FILE) or {
-		app.log.fatal('unable to read V module file')
+		lock app.state {
+			app.state.log.fatal('unable to read V module file')
+		}
 		panic(err)
 	}
 	lock app.state {
@@ -129,7 +133,7 @@ fn new_app() &App {
 	println('Server initialization at ${app.started_at}...')
 	// config application
 	app.set_app_config()
-	app.log_info('Application initialization ...') // after set logger level
+	app.log_info('Application initialization ...') // just after logger config
 
 	// set application metadata
 	app.set_app_metadata()
@@ -164,12 +168,16 @@ pub fn (mut app App) before_request() {
 
 // log_debug log with verbosity debug, using application logger
 fn (mut app App) log_debug(msg string) {
-	app.log.debug(msg)
+	lock app.state {
+		app.state.log.debug(msg)
+	}
 }
 
 // log_info log with verbosity info, using application logger
 fn (mut app App) log_info(msg string) {
-	app.log.info(msg)
+	lock app.state {
+		app.state.log.info(msg)
+	}
 }
 
 // inc_cnt_page increment and return counter value for page calls, from shared state
