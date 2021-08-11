@@ -96,20 +96,21 @@ build: build-normal
 build-normal: clean-build setup
 	@echo "Build all sources not optimized, in the folder './build'..."
 	@touch ./build/build-normal.out
+	@cd minimal && v -g -o ../build/vweb-minimal server-minimal.v && cd -
+	@cd healthcheck && v -g -o ../build/healthcheck healthcheck.v && cd -
 	@v -g -o ./build/vweb-example server.v
-	@cd minimal && v -g -o ../build/vweb-minimal server-minimal.v
-	@cd healthcheck && v -g -o ../build/healthcheck healthcheck.v
 	@ls -la ./build
 
 build-optimized: clean-build setup
 	@echo "Build all sources optimized, in the folder './build'..."
-	@echo "note that this requires 'upx' installed (to compress/strip executables)"
 	@touch ./build/build-optimized.out
 	@$(eval opts := ${COMPILER_OPTIMIZE_FLAGS})
+	@cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v && cd -
+	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v && cd -
 	@v ${opts} -o ./build/vweb-example server.v
-	@cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
-	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
 	@ls -la ./build
+	@echo "note that to compress/strip executables there is a dedicated task to run,"\
+		  "but to process only those in the './dist' folder"
 
 build-static-ubuntu: clean-build setup
 	@echo "Build all sources not optimized and with libraries statically linked, in the folder './build'..."
@@ -120,9 +121,9 @@ build-static-ubuntu: clean-build setup
 	@ # install manually OpenSSL sources (newer than default distribution source package), and link like in the previous command.
 	@touch ./build/build-static.out
 	@$(eval opts := -cg -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
-	@v ${opts} -o ./build/vweb-example server.v
 	# @ cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
-	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v
+	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v && cd -
+	@v ${opts} -o ./build/vweb-example server.v
 	@ls -la ./build
 
 build-optimized-static-ubuntu: clean-build setup
