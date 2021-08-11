@@ -60,7 +60,7 @@ mut:
 
 // set_app_config set application configuration
 fn (mut app App) set_app_config() {
-	// instance and configures logging, etc
+	// instance and configures logging: minimum logging level, etc
 	$if debug {
 		app.log_level = log.Level.debug
 	} $else {
@@ -93,7 +93,7 @@ fn (mut app App) set_app_metadata() {
 	}
 	$if debug {
 		rlock app.state {
-			app.log.info('application metadata (from module): $app.state.metadata')
+			app.log_info('application metadata (from module): $app.state.metadata')
 		}
 	}
 }
@@ -129,7 +129,7 @@ fn new_app() &App {
 	println('Server initialization at ${app.started_at}...')
 	// config application
 	app.set_app_config()
-	app.log.info('Application initialization ...') // after set logger level
+	app.log_info('Application initialization ...') // after set logger level
 
 	// set application metadata
 	app.set_app_metadata()
@@ -139,9 +139,9 @@ fn new_app() &App {
 
 	// initialization done
 	rlock app.state {
-		app.log.info('${app.state.metadata['name']}-${app.state.metadata['version']} initialized')
+		app.log_info('${app.state.metadata['name']}-${app.state.metadata['version']} initialized')
 	}
-	app.log.info('vweb appl, built with V $v_version') // print V version (set at build time)
+	app.log_info('vweb appl, built with V $v_version') // print V version (set at build time)
 
 	return app
 }
@@ -149,41 +149,55 @@ fn new_app() &App {
 // before_request initialization just before any route call
 pub fn (mut app App) before_request() {
 	// url := app.req.url
-	// app.log.debug('${@FN}: url=$url')
-	// app.log.debug('debug test') // temp
+	// app.log_debug('${@FN}: url=$url')
+	// app.log_debug('debug test') // temp
 	$if debug { // temporary workaround to logger not writing output in debug here ...
 		rlock app.state {
 			msg := '${@FN}: requested total pages: $app.state.cnt_page, total api: $app.state.cnt_api'
 			println(msg) // temp
-			// app.log.debug(msg)
+			app.log_debug(msg)
 		}
 	}
 	// app.logged_in = app.logged_in()
 	app.user_id = app.get_cookie('id') or { '0' }
 }
 
-pub fn (mut app App) inc_cnt_page() int {
+// log_debug log with verbosity debug, using application logger
+fn (mut app App) log_debug(msg string) {
+	app.log.debug(msg)
+}
+
+// log_info log with verbosity info, using application logger
+fn (mut app App) log_info(msg string) {
+	app.log.info(msg)
+}
+
+// inc_cnt_page increment and return counter value for page calls, from shared state
+fn (mut app App) inc_cnt_page() int {
 	mut data := lock app.state {
 		app.state.cnt_page++
 	}
 	return data
 }
 
-pub fn (mut app App) inc_cnt_api() int {
+// inc_cnt_api increment and return counter value for api calls, from shared state
+fn (mut app App) inc_cnt_api() int {
 	mut data := lock app.state {
 		app.state.cnt_api++
 	}
 	return data
 }
 
-pub fn (mut app App) app_name() string {
+// app_name return app name, from shared state
+fn (mut app App) app_name() string {
 	mut data := rlock app.state {
 		app.state.metadata['name']
 	}
 	return data
 }
 
-pub fn (mut app App) app_version() string {
+// app_version return app name, from shared state
+fn (mut app App) app_version() string {
 	mut data := rlock app.state {
 		app.state.metadata['version']
 	}
@@ -194,7 +208,7 @@ pub fn (mut app App) app_version() string {
 // graceful_exit logic for graceful shutdown of the webapp
 // future use
 fn (mut app App) graceful_exit() {
-	app.log.info("Application shutdown in $app.timeout msec ...")
+	app.log_info("Application shutdown in $app.timeout msec ...")
 	time.sleep_ms(app.timeout)
 	exit(0)
 }
@@ -304,7 +318,7 @@ pub fn (mut app App) app_info() vweb.Result {
 	rlock app.state {
 		// println('$app.state.metadata') // temp
 		// check later how to have this work ...
-		// app.log.debug('${app.state.metadata['name']}-${app.state.metadata['version']} initialized')
+		// app.log_debug('${app.state.metadata['name']}-${app.state.metadata['version']} initialized')
 		metadata = '$app.state.metadata'
 	}
 	return app.text(metadata)
