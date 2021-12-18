@@ -115,13 +115,14 @@ build-optimized: clean-build setup
 build-static-ubuntu: clean-build setup
 	@echo "Build all sources not optimized and with libraries statically linked, in the folder './build'..."
 	@echo "note that this requires 'musl-gcc' installed (default in Alpine Linux, and 'musl-tools' in Ubuntu) and libraries built with musl"
-	@ # In Ubuntu ensure to have installed 'libssl-dev' and ensure at least to have a symbolic link to reference installed headers, like:
+	@ # In Ubuntu ensure to have installed 'libssl-dev' and ensure at least to have a symbolic link to reference installed headers, 
 	@ # look at the document in the 'docs./' folder for more details
 	@ # or (better):
-	@ # install manually OpenSSL sources (newer than default distribution source package), and link like in the previous command.
+	@ # install manually OpenSSL sources (usually newer than default distribution source package), and link like in the previous step.
 	@touch ./build/build-static.out
-	@$(eval opts := -cg -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
-	# @ cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
+	# @ $(eval opts := -cg -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
+	@$(eval opts := -cg -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include/openssl -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl') # TODO: WIP ...
+	# @ cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v && cd -
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v && cd -
 	@v ${opts} -o ./build/vweb-example server.v
 	@ls -la ./build
