@@ -115,13 +115,13 @@ build-optimized: clean-build setup
 build-static-ubuntu: clean-build setup
 	@echo "Build all sources not optimized and with libraries statically linked, in the folder './build'..."
 	@echo "note that this requires 'musl-gcc' installed (default in Alpine Linux, and 'musl-tools' in Ubuntu) and libraries built with musl"
+	@echo "otherwise get musl sources from [musl - libc](https://musl.libc.org/) and then compile and install; ensure to have a symbolic link to its headers"
 	@ # In Ubuntu ensure to have installed 'libssl-dev' and ensure at least to have a symbolic link to reference installed headers, 
 	@ # look at the document in the 'docs./' folder for more details
 	@ # or (better):
 	@ # install manually OpenSSL sources (usually newer than default distribution source package), and link like in the previous step.
 	@touch ./build/build-static.out
-	# @ $(eval opts := -cg -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
-	@$(eval opts := -cg -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include/openssl -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl') # TODO: WIP ...
+	@$(eval opts := -cg -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include/openssl -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
 	# @ cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v && cd -
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v && cd -
 	@v ${opts} -o ./build/vweb-example server.v
@@ -132,7 +132,7 @@ build-optimized-static-ubuntu: clean-build setup
 	@echo "note that this requires 'musl-gcc' installed and libraries built with musl"
 	@echo "note that this requires 'upx' installed (to compress/strip executables)"
 	@touch ./build/build-optimized-static.out
-	@$(eval opts := ${COMPILER_OPTIMIZE_FLAGS} -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
+	@$(eval opts := ${COMPILER_OPTIMIZE_FLAGS} -cc musl-gcc -cflags '--static -I/usr/local/include/musl -I/usr/local/include/openssl -L/usr/lib/x86_64-linux-musl -L/usr/local/ssl/lib -L/usr/lib/x86_64-linux-gnu -lssl')
 	@v ${opts} -o ./build/vweb-example server.v
 	# @ cd minimal && v ${opts} -o ../build/vweb-minimal server-minimal.v
 	@cd healthcheck && v ${opts} -o ../build/healthcheck healthcheck.v

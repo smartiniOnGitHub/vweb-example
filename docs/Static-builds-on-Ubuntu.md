@@ -55,7 +55,17 @@ so probably it's simpler (at least for now) to try all this stuff in Alpine Linu
 
 ## Build OpenSSL (with MUSL libraries)
 
-Just for test, tried to build OpenSSL with musl, to be able to use as dependency in my builds here.
+First ensure to have musl libraries:
+the package is 'musl-gcc' (default in Alpine Linux) and 'musl-tools' in Ubuntu; 
+otherwise get musl sources from [musl - libc](https://musl.libc.org/), 
+usually newer than default distribution package, then compile and install.
+For example ensure to have musl libraries installed in `/usr/lib/x86_64-linux-musl/` 
+and related include files at `/usr/local/src/` maybe with a symbolic link in `/usr/local/include/musl` to reference `/usr/local/src/musl/include`.
+Check if add another symbolic link `/usr/local/src/musl` to reference 
+desired version of related sources.
+
+Then build OpenSSL sources (usually newer than default distribution package) 
+with musl libraries, to be able to use as dependency in my builds here.
 
 Get sources, unzip and fix permissions:
 ```bash
@@ -72,10 +82,18 @@ go into the openssl sources folder and configure for a static build with:
 export CC=musl-gcc # set musl-gcc, important here
 ./config --prefix=/usr/local/ssl --openssldir=/usr/local/ssl no-shared no-engine no-weak-ssl-ciphers no-async --release -DOPENSSL_NO_SECURE_MEMORY
 ```
-(added the flag '-DOPENSSL_NO_SECURE_MEMORY' to avoid a compilation error, as seen in related bug; 
-of course for a real production usage a workaround like that is not acceptable and a better solution must be used).
-Then `make clean && make` and (optional) `make test` and then install in the given (secondary) folder 
-with `sudo make install`, then finally `ll /usr/local/ssl/lib/` and `ll /usr/local/ssl/include/openssl/`.
+(added the flag '-DOPENSSL_NO_SECURE_MEMORY' to avoid a compilation error, 
+as seen in related bug; of course for a real production usage a workaround like that 
+is not acceptable and a better solution must be used).
+Then `make clean && make` and (optional) `make test` and then install 
+in the given (secondary) folder with `sudo make install`.
+Then ensure to have ssl libraries installed in `/usr/local/ssl/lib/` 
+and related sources (in its own folder) under `/usr/local/src/`; 
+maybe add a convenience symbolic link for its include files, 
+in `/usr/local/include/openssl` to reference `/usr/local/ssl/include/openssl`.
+Check if add another symbolic link `/usr/local/src/openssl` to reference 
+desired version of related sources.
+
 Finally, test it for example with: `/usr/local/ssl/bin/openssl version`; in general (but not in this build) it's possible even to check dynamic library with `ldd /usr/local/ssl/lib/openssl.so`.
 
 Note that crypto is linked statically in ssl here, so library consumers doesn't need to refer to it.
