@@ -39,9 +39,10 @@ fn main() {
 fn new_app() &App {
 	mut app := &App{}
 
-	// additional app instance startup only configuration
+	// new app instance, startup only configuration
+	// os.chdir(os.dir(os.executable())) ? // but first change to executable folder
 	// app.handle_static('.', false) // serve static content from current folder
-	// app.handle_static('public', false) // serve static content from folder './public'
+	// app.handle_static('public', true) // serve static content from folder './public'
 	// note that template files now can be in the same folder, or under 'templates/' ...
 
 	return app

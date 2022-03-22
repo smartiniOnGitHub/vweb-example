@@ -16,6 +16,8 @@ Summary Changelog:
 - General: update source docs to be aligned with vdoc
 - General: in optimized (production) builds, do not enable autofree, 
   but do it later (still there are runtime problems with it)
+- General: in app initialization, log V compile time `debug` flag when enabled
+- Feature: ensure V integrated logging works, now even in routes
 
 
 ## [0.2.1](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.2.1) (2021-02-28)
