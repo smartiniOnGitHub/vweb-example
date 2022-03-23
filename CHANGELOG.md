@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.2.3](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.2.3) (unreleased)
+Summary Changelog:
+- General: Ensure all works with latest V 0.2.x post 0.2.4
+
+
 ## [0.2.2](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.2.2) (2022-03-23)
 Summary Changelog:
 - General: Ensure all works with latest V 0.2.x post 0.2.2 
