@@ -1,6 +1,5 @@
 # vweb-example
 
-  [![Docker Pulls](https://img.shields.io/docker/pulls/smartiniatdocker09/vweb-example.svg)](https://hub.docker.com/r/smartiniatdocker09/vweb-example/)
   [![Apache 2.0 License](https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat)](./LICENSE)
 
 Example webapp with vweb (V integrated web framework).

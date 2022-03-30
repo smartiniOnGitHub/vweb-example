@@ -3,6 +3,9 @@
 ## [0.2.3](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.2.3) (unreleased)
 Summary Changelog:
 - General: Ensure all works with latest V 0.2.x post 0.2.4
+- General: removed outdated badges on dependencies 
+  because that site seems no longer available
+- General: removed outdated project/images at DockerHub
 
 
 ## [0.2.2](https://github.com/smartiniOnGitHub/vweb-example/releases/tag/0.2.2) (2022-03-23)
